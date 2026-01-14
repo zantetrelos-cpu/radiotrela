@@ -9,14 +9,13 @@
   body{margin:0;font-family:Segoe UI,Arial,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;overflow:hidden;background:100% 100%}
  
   /* POPUP MODAL CSS */
-  #loadingModal, #introOverlay {
+  #loadingModal {
     display: none;
     position: fixed;
     z-index: 1000;
     left: 0; top: 0; width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.9);
+    background-color: rgba(0,0,0,0.8);
     align-items: center; justify-content: center;
-    flex-direction: column;
   }
   .modal-content {
     background: rgba(20, 20, 20, 0.9);
@@ -30,18 +29,13 @@
     box-shadow: 0 0 30px #00ffcc;
     animation: pulse 1.5s infinite;
   }
-  
-  #closeIntroBtn {
-    margin-top: 20px; padding: 10px 20px; background: #00ffcc; color: #000;
-    border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
-  }
-
   @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
   }
 
+  /* Ο ΚΥΚΛΟΣ ΠΑΡΑΜΕΝΕΙ ΣΤΟ ΚΕΝΤΡΟ ΜΕ ΤΑ ΧΡΩΜΑΤΑ ΤΟΥ */
   .player-btn{
     width:180px;height:180px;border-radius:50%;border:4px solid #00ffcc;
     background: rgba(0, 0, 0, 0.0) url('radio.png') center/cover no-repeat;
@@ -54,6 +48,7 @@
     box-shadow: 0 0 var(--glow-size) rgba(var(--glow-r),var(--glow-g),var(--glow-b),var(--glow-alpha)), 0 0 calc(var(--glow-size) / 3) rgba(var(--glow-r),var(--glow-b),calc(var(--glow-alpha) * .6));
   }
 
+  /* ΤΟ ΜΠΟΥΤΟΝ ΕΛΕΓΧΟΥ ΠΑΕΙ ΠΑΝΩ ΔΕΞΙΑ - ΧΩΡΙΣ ΝΑ ΧΑΛΑΕΙ ΤΟΝ ΚΥΚΛΟ */
   #playBtn {
     position: absolute; top: 20px; right: 20px;
     width: 100px; height: 45px; border-radius: 8px;
@@ -91,13 +86,6 @@
 </head>
 <body>
 
-<div id="introOverlay">
-  <div class="modal-content">
-    <div>Radio Synnefa Intro...</div>
-    <button id="closeIntroBtn">Ακύρωση Intro & Live</button>
-  </div>
-</div>
-
 <div id="loadingModal">
   <div class="modal-content" id="modalText">Φόρτωση...</div>
 </div>
@@ -107,7 +95,7 @@
 <div id="playBtn">Play</div>
 
 <div id="status" class="offair">Πάτησε Play</div>
-<div id="nowPlaying">Radio Synnefa LIVE</div>
+<div id="nowPlaying">RADIO EROTAS LIVE</div>
 
 <div id="volumeControl">
   <input type="range" id="volumeSlider" min="0" max="100" value="100">
@@ -116,19 +104,15 @@
 
 <div id="effectBtn">Bars</div>
 
-<script>                        
+<script>                                        
 const STREAMS = {
   live: { name: "ΚΥΡΙΟΣ ΣΕΡΒΕΡ", streamUrl: "https://freestream.hu:8340/trela233", statusUrl: "https://freestream.hu:8340/status-json.xsl?mount=/trela233" },
   backup: { name: "BACKUP ΣΕΡΒΕΡ", streamUrl: "https://stream.zeno.fm/x8gduy6xd48uv", zenoStationId: "x8gduy6xd48uv", zenoMetaUrl: (id) => `https://api.zeno.fm/mounts/metadata/subscribe/${id}` }
 };
 
-// MP3 ΠΟΥ ΖΗΤΗΣΑΤΕ
-const INTRO_MP3_URL = "https://zantetrelos-cpu.github.io/radiotrela/%CE%A1%CE%AC%CE%B4%CE%B9%CE%BF%20%CE%A3%CF%8D%CE%BD%CE%BD%CE%B5%CF%86%CE%B1.mp3";
-const originalRadioName = "Radio Synnefa LIVE";
+const originalRadioName = "RADIO EROTAS LIVE";
 
 let audio = new Audio(); audio.crossOrigin = "anonymous";
-let introAudio = new Audio(INTRO_MP3_URL); // Ξεχωριστό audio object για να μην επηρεάζει το ράδιο
-
 let audioCtx, analyser, dataArray, bufferLength, sourceNode;
 let isPlaying = false, isLive = true, retryIntervalMs = 60000;
 
@@ -142,12 +126,9 @@ const volumeSlider = document.getElementById('volumeSlider');
 const volumeValue = document.getElementById('volumeValue');
 const effectBtn = document.getElementById('effectBtn');
 
+// ΣΤΟΙΧΕΙΑ ΓΙΑ ΤΟ MODAL
 const loadingModal = document.getElementById('loadingModal');
 const modalText = document.getElementById('modalText');
-
-// Στοιχεία Intro
-const introOverlay = document.getElementById('introOverlay');
-const closeIntroBtn = document.getElementById('closeIntroBtn');
 
 function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 window.addEventListener('resize', resizeCanvas);
@@ -219,7 +200,6 @@ effectBtn.addEventListener('click', () => {
 
 volumeSlider.addEventListener('input', () => {
   audio.volume = volumeSlider.value / 100;
-  introAudio.volume = volumeSlider.value / 100; // Ρυθμίζει και το intro
   volumeValue.textContent = `${volumeSlider.value}%`;
 });
 
@@ -290,6 +270,7 @@ async function updateNowPlayingImmediate(){
 async function playStream(url, live=true){
   audio.pause(); audio.src = ""; isLive = live;
   
+  // ΕΜΦΑΝΙΣΗ MODAL ΚΑΙ ΜΗΝΥΜΑΤΟΣ
   modalText.textContent = live ? "Φόρτωση live streaming" : "παρακαλώ περιμένετε φόρτωση servers";
   loadingModal.style.display = "flex";
 
@@ -297,14 +278,14 @@ async function playStream(url, live=true){
   statusEl.className = "loading"; audio.src = url;
   try {
     await audio.play();
-    loadingModal.style.display = "none";
-    statusEl.textContent = live ? "ON AIR Radio Synnefa" : " ON AIR (Fallback)";
+    loadingModal.style.display = "none"; // ΚΛΕΙΣΙΜΟ MODAL ΟΤΑΝ ΠΑΙΞΕΙ
+    statusEl.textContent = live ? "ON AIR RADIO EROTAS" : " ON AIR (Fallback)";
     statusEl.className = live ? "onair" : "offair";
     updateNowPlayingImmediate();
   } catch(e){
     if(live) playStream(STREAMS.backup.streamUrl, false);
     else { 
-        modalText.textContent = "παρακαλώ περιμένετε φόρτωση servers";
+        modalText.textContent = "παρακαλώ περιμένετε φόρτωση servers"; // ΠΑΡΑΜΕΝΕΙ ΤΟ MODAL ΑΝ ΑΠΟΤΥΧΟΥΝ ΟΛΑ
         statusEl.textContent = "παρακαλώ περιμένετε φόρτωση server"; 
         statusEl.className = "offair"; 
     }
@@ -336,11 +317,8 @@ requestAnimationFrame(rotateButton);
 
 btn.addEventListener('click', () => {
   if(isPlaying){
-    audio.pause(); introAudio.pause(); // Κλείνουν και τα δύο αν πατηθεί παύση
-    btn.textContent = "Play"; statusEl.textContent = "Παύση"; statusEl.className = "offair"; 
-    isPlaying = false; stopZeno();
+    audio.pause(); btn.textContent = "Play"; statusEl.textContent = "Παύση"; statusEl.className = "offair"; isPlaying = false; stopZeno();
     loadingModal.style.display = "none";
-    introOverlay.style.display = "none";
   } else {
     btn.textContent = "Pause"; setupAudioNodes(); playStream(STREAMS.live.streamUrl, true); isPlaying = true; startAutoRetry();
   }
@@ -351,30 +329,23 @@ audio.addEventListener('ended', () => { if(isLive) playStream(STREAMS.backup.str
 
 setInterval(() => { if(isLive && isPlaying) fetchLiveTitle().then(t => { if(isLive) nowPlayingEl.textContent = t; }); }, 15000);
 
-// --- ΛΕΙΤΟΥΡΓΙΑ INTRO (Η ΠΡΟΣΘΗΚΗ ΣΟΥ) ---
-function runIntroSequence() {
-    introOverlay.style.display = "flex";
-    introAudio.play().catch(() => {
-        // Αν ο browser μπλοκάρει το αυτόματο play, απλά κλείνουμε το intro
-        finishIntro();
-    });
-
-    introAudio.onended = finishIntro;
-    closeIntroBtn.onclick = finishIntro;
-}
-
-function finishIntro() {
-    introAudio.pause();
-    introOverlay.style.display = "none";
-    // Προσομοίωση κλικ στο Play για να ξεκινήσει ο αρχικός σου κώδικας χωρίς αλλαγές
-    if(!isPlaying) btn.click();
-}
-
 window.addEventListener('load', () => {
-    // Εκκίνηση intro μετά από μισό δευτερόλεπτο
-    setTimeout(runIntroSequence, 500);
+  const isInIframe = window.self !== window.top;
+  const hasReferrer = document.referrer && !document.referrer.includes(location.hostname);
+  if (isInIframe || hasReferrer) {
+    setTimeout(() => {
+      if (!isPlaying) {
+        btn.textContent = "Pause";
+        statusEl.textContent = "Φόρτωση...";
+        statusEl.className = "loading";
+        setupAudioNodes();
+        playStream(STREAMS.live.streamUrl, true);
+        isPlaying = true;
+        startAutoRetry();
+      }
+    }, 300);
+  }
 });
-// ----------------------------------------
 
 let _breathRunning = false;
 function computeLevelFromFrequencyData() {
