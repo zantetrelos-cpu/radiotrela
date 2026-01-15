@@ -166,15 +166,15 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-<div id="auth-box" style="position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white;">
-    <h2>Είσοδος στο Ράδιο Σύννεφα</h2>
-    <input type="email" id="u-email" placeholder="Email" style="margin:5px; padding:10px;">
-    <input type="password" id="u-pass" placeholder="Κωδικός" style="margin:5px; padding:10px;">
-    <div>
-        <button onclick="doLogin()" style="padding:10px 20px; background:green; color:white; cursor:pointer;">ΕΙΣΟΔΟΣ</button>
-        <button onclick="doRegister()" style="padding:10px 20px; background:blue; color:white; cursor:pointer;">ΕΓΓΡΑΦΗ ΝΕΟΥ ΧΡΗΣΤΗ</button>
+<div id="auth-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:99999; display:flex; justify-content:center; align-items:center;">
+    <div style="background:#1a1a1a; padding:30px; border-radius:15px; text-align:center; border:2px solid #ff0000; width:320px; color:white;">
+      <h2>Ράδιο Σύννεφα</h2>
+      <input type="email" id="email" placeholder="Email" style="width:90%; padding:12px; margin:10px 0; border-radius:5px;">
+      <input type="password" id="password" placeholder="Κωδικός (6+ χαρακτήρες)" style="width:90%; padding:12px; margin:10px 0; border-radius:5px;">
+      <button onclick="login()" style="width:100%; padding:12px; background:#ff0000; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">ΕΙΣΟΔΟΣ</button>
+      <button onclick="register()" style="width:100%; padding:12px; margin-top:10px; background:#444; color:white; border:none; border-radius:5px; cursor:pointer;">ΕΓΓΡΑΦΗ ΝΕΟΥ ΧΡΗΣΤΗ</button>
+      <p id="msg" style="color:red; font-size:13px; margin-top:10px;"></p>
     </div>
-    <p id="msg" style="color:red;"></p>
 </div>
 <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Ράδιο Σύννεφα - Radio Synnefa</h1>
   <button id="openBtn">Ακούστε Live</button>
@@ -232,31 +232,36 @@
   </script>
   
   <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCUt5Y_-mzz7t7PlmBsv6UXGdU22pVCsqs",
-  authDomain: "radiochat-d261d.firebaseapp.com",
-  projectId: "radiochat-d261d",
-  storageBucket: "radiochat-d261d.firebasestorage.app",
-  messagingSenderId: "525889449189",
-  appId: "1:525889449189:web:911a404cf8dd15e479780c"
-};
-firebase.initializeApp(firebaseConfig);
+  // Τα δικά σου στοιχεία Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyCUt5Y_-mzz7t7PlmBsv6UXGdU22pVCsqs",
+    authDomain: "radiochat-d261d.firebaseapp.com",
+    projectId: "radiochat-d261d",
+    storageBucket: "radiochat-d261d.firebasestorage.app",
+    messagingSenderId: "525889449189",
+    appId: "1:525889449189:web:911a404cf8dd15e479780c"
+  };
+  firebase.initializeApp(firebaseConfig);
 
-function doLogin() {
-    const email = document.getElementById('u-email').value;
-    const pass = document.getElementById('u-pass').value;
+  function login() {
+    const email = document.getElementById('email').value;
+    const pass = document.getElementById('password').value;
     firebase.auth().signInWithEmailAndPassword(email, pass)
-        .then(() => { document.getElementById('auth-box').style.display='none'; })
-        .catch((err) => { document.getElementById('msg').innerText = "Λάθος στοιχεία!"; });
-}
+      .then(() => {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('mainBody').style.display = 'block';
+        document.getElementById('openBtn').style.display = 'block';
+      })
+      .catch((err) => { document.getElementById('msg').innerText = "Λάθος στοιχεία!"; });
+  }
 
-function doRegister() {
-    const email = document.getElementById('u-email').value;
-    const pass = document.getElementById('u-pass').value;
+  function register() {
+    const email = document.getElementById('email').value;
+    const pass = document.getElementById('password').value;
     firebase.auth().createUserWithEmailAndPassword(email, pass)
-        .then(() => { alert("Η εγγραφή πέτυχε! Τώρα πάτα ΕΙΣΟΔΟΣ."); })
-        .catch((err) => { document.getElementById('msg').innerText = "Σφάλμα: " + err.message; });
-}
+      .then(() => { alert("Εγγραφή επιτυχής! Πατήστε ΕΙΣΟΔΟΣ."); })
+      .catch((err) => { document.getElementById('msg').innerText = "Σφάλμα: " + err.message; });
+  }
 </script>
 
 </body>
