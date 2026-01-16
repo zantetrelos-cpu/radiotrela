@@ -246,6 +246,9 @@
   };
   firebase.initializeApp(firebaseConfig);
 
+  // ΑΥΤΗ Η ΓΡΑΜΜΗ ΓΥΡΙΖΕΙ ΤΟ EMAIL ΚΑΙ ΤΗ ΣΕΛΙΔΑ ΣΤΑ ΕΛΛΗΝΙΚΑ
+  firebase.auth().useDeviceLanguage(); 
+
   function login() {
     const email = document.getElementById('email').value;
     const pass = document.getElementById('password').value;
@@ -276,9 +279,8 @@
     firebase.auth().createUserWithEmailAndPassword(email, pass)
       .then((userCredential) => {
         userCredential.user.sendEmailVerification().then(() => {
-          // Εδώ έγινε η διόρθωση: Σβήστηκε το alert και το μήνυμα πάει στο msg
           const msgElement = document.getElementById('msg');
-          msgElement.style.color = "#00FF00"; // Πράσινο χρώμα για να φαίνεται η επιτυχία
+          msgElement.style.color = "#00FF00"; 
           msgElement.innerText = "Η εγγραφή έγινε! Σας στείλαμε email επιβεβαίωσης. Πατήστε το link και μετά κάντε ΕΙΣΟΔΟ.";
         });
       })
