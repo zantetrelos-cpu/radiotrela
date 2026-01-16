@@ -235,7 +235,7 @@
     });
   </script>
   <!--  forma egrafis  -->	
- <script>
+<script>
   const firebaseConfig = {
     apiKey: "AIzaSyCUt5Y_-mzz7t7PlmBsv6UXGdU22pVCsqs",
     authDomain: "radiochat-d261d.firebaseapp.com",
@@ -253,17 +253,20 @@
     firebase.auth().signInWithEmailAndPassword(email, pass)
       .then((userCredential) => {
         const user = userCredential.user;
-        // Έλεγχος αν έχει πατήσει το link στο email
         if (user.emailVerified) {
           document.getElementById('auth-screen').style.display = 'none';
           document.getElementById('mainBody').style.display = 'block';
           document.getElementById('openBtn').style.display = 'block';
         } else {
+          document.getElementById('msg').style.color = "red";
           document.getElementById('msg').innerText = "Πρέπει να επιβεβαιώσετε το email σας! Ελέγξτε τα εισερχόμενα.";
           firebase.auth().signOut();
         }
       })
-      .catch((err) => { document.getElementById('msg').innerText = "Λάθος στοιχεία ή ο χρήστης δεν υπάρχει."; });
+      .catch((err) => { 
+        document.getElementById('msg').style.color = "red";
+        document.getElementById('msg').innerText = "Λάθος στοιχεία ή ο χρήστης δεν υπάρχει."; 
+      });
   }
 
   function register() {
@@ -272,12 +275,17 @@
     
     firebase.auth().createUserWithEmailAndPassword(email, pass)
       .then((userCredential) => {
-        // Στέλνει αυτόματα το email επιβεβαίωσης
         userCredential.user.sendEmailVerification().then(() => {
-          alert("Η εγγραφή έγινε! Σας στείλαμε email επιβεβαίωσης. Πατήστε το link και μετά κάντε ΕΙΣΟΔΟ.");
+          // Εδώ έγινε η διόρθωση: Σβήστηκε το alert και το μήνυμα πάει στο msg
+          const msgElement = document.getElementById('msg');
+          msgElement.style.color = "#00FF00"; // Πράσινο χρώμα για να φαίνεται η επιτυχία
+          msgElement.innerText = "Η εγγραφή έγινε! Σας στείλαμε email επιβεβαίωσης. Πατήστε το link και μετά κάντε ΕΙΣΟΔΟ.";
         });
       })
-      .catch((err) => { document.getElementById('msg').innerText = "Σφάλμα: " + err.message; });
+      .catch((err) => { 
+        document.getElementById('msg').style.color = "red";
+        document.getElementById('msg').innerText = "Σφάλμα: " + err.message; 
+      });
   }
 </script>
  <!--  forma egrafis  -->	
