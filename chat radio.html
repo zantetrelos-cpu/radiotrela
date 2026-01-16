@@ -120,11 +120,11 @@ body {
     <div style="display:flex; flex-direction:column; align-items:center; width:90%;">
 
       <div style="color:white; margin-bottom:15px; font-size:18px; font-weight:bold; text-shadow: 2px 2px 4px #000; text-align:center;">
-           ΚΑΛΩΣ ΗΡΘΑΤΕ ΣΤΟ ΡΑΔΙΟ ΣΥΝΝΕΦΑ
+           ΦΟΡΜΑ ΕΓΓΡΑΦΗΣ ΓΙΑ ΡΑΔΙΟ ΣΥΝΕΦΑ CHAT LIVE
       </div>
 
       <div style="background:rgba(26, 26, 26, 0.85); padding:30px; border-radius:15px; text-align:center; border:2px solid #ff0000; width:100%; max-width:500px; color:white; backdrop-filter: blur(5px); box-sizing: border-box;">
-        <h2>Ράδιο Σύννεφα</h2>
+       
         <input type="email" id="email" placeholder="Email" style="width:95%; padding:12px; margin:10px 0; border-radius:5px; border:none;">
         <input type="password" id="password" placeholder="Κωδικός (6+ χαρακτήρες)" style="width:95%; padding:12px; margin:10px 0; border-radius:5px; border:none;">
         <button onclick="login()" style="position:relative; top:0; left:0; width:100%; padding:12px; background:#ff0000; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">ΕΙΣΟΔΟΣ</button>
@@ -138,7 +138,7 @@ body {
               ℹ️ Οδηγίες Εγγραφής
           </button>
           <button onclick="document.getElementById('radio-modal').style.display='flex'" style="position:relative; top:0; left:0; background:rgba(0,0,0,0.6); color:white; border:1px solid white; padding:8px 15px; border-radius:20px; cursor:pointer; font-size:13px;">
-              📻 Πληροφορίες Ράδιο
+              📻 Πληροφορίες  (ζωντανή συνομιλία)
           </button>
       </div>
 
@@ -175,26 +175,39 @@ body {
 
 <div id="radio-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100000; justify-content:center; align-items:center;">
     <div style="background:#1a1a1a; color:white; padding:25px; border-radius:15px; border:2px solid #ff0000; max-width:500px; width:85%; text-align:center;">
-        <h3 style="color:#ff0000;">Σχετικά με το Ράδιο Σύννεφα</h3>
+   <h3 style="color:#ff0000;">Σχετικά με το Live (ζωντανή συνομιλία)</h3>
       
-		 <div style="font-size:14px; line-height:1.6;">
-            <p>Η διαδικασία είναι γρήγορη και απόλυτα ασφαλής:</p>
-            
-            <p><strong>Στοιχεία:</strong> Βάλτε το email σας και έναν κωδικό της επιλογής σας.<br> 
-            Τα στοιχεία σας προστατεύονται με την εγγύηση της Google.</p>
+<div style="font-size:14px; line-height:1.6;">
 
-            <p><strong>Επιβεβαίωση:</strong> Θα σας στείλουμε ένα email για να βεβαιωθούμε ότι η διεύθυνση είναι σωστή.</p>
+    <p>
+        Το Chat του ραδιοφώνου μας είναι <strong>Live (ζωντανή συνομιλία)</strong> και λειτουργεί σε πραγματικό χρόνο 
+        κατά τη διάρκεια του προγράμματος.
+    </p>
 
-            <div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:8px; margin:10px 0;">
-                <p style="margin:0;">💡 <strong>Μια μικρή συμβουλή:</strong> Αν δεν δείτε το email στα εισερχόμενά σας μέσα σε λίγα λεπτά, ρίξτε μια ματιά και στον φάκελο <strong>Ανεπιθύμητα (Spam)</strong>. Καμιά φορά τα συστήματα το στέλνουν εκεί.</p>
-            </div>
+    <p>
+        Για να διατηρούμε ένα σωστό και ευχάριστο κλίμα, το chat λειτουργεί με <strong>έλεγχο συμμετοχής</strong>. 
+        Αυτό μας επιτρέπει να αποφεύγουμε ενοχλητικές συμπεριφορές, προσβλητικά σχόλια και μηνύματα που χαλάνε την εμπειρία των ακροατών.
+    </p>
 
-            <p><strong>Είσοδος:</strong> Πατήστε τον σύνδεσμο μέσα στο email και είστε έτοιμοι! Τώρα μπορείτε να κάνετε "Είσοδο" κανονικά.</p>
+    <p>
+        Σκοπός μας δεν είναι ο περιορισμός της ελευθερίας έκφρασης, αλλά η <strong>προστασία των χρηστών</strong> 
+        και η δημιουργία μιας κοινότητας με σεβασμό και καλή διάθεση.
+    </p>
 
-            <p style="border-top: 1px solid #444; pt-10; margin-top:10px;">
-                <strong>Είναι ασφαλές;</strong> Φυσικά! Χρησιμοποιούμε την πλατφόρμα Firebase της Google, οπότε ο λογαριασμός σας είναι θωρακισμένος και τα δεδομένα σας παραμένουν ιδιωτικά.
-            </p>
-        </div>
+    <div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:8px; margin:10px 0;">
+        <p style="margin:0;">
+            💬 <strong>Σημαντικό:</strong> Μηνύματα με προσβλητικό, υβριστικό ή ακατάλληλο περιεχόμενο 
+            ενδέχεται να αφαιρούνται χωρίς προειδοποίηση.
+        </p>
+    </div>
+
+    <p style="border-top: 1px solid #444; padding-top:10px; margin-top:10px;">
+        Με αυτόν τον τρόπο διασφαλίζουμε ένα <strong>ασφαλές, φιλικό και ποιοτικό Live Chat</strong>, 
+        ώστε όλοι να μπορούν να συμμετέχουν και να απολαμβάνουν τη ζωντανή επικοινωνία με το ραδιόφωνο.
+    </p>
+
+</div>
+
         <button onclick="document.getElementById('radio-modal').style.display='none'" style="position:relative; top:0; left:0; margin-top:20px; width:100%; background:#ff0000; color:white; border:none; padding:12px; border-radius:5px; cursor:pointer; font-weight:bold;">ΚΛΕΙΣΙΜΟ</button>
     </div>
 </div>
@@ -409,5 +422,7 @@ body {
       });
   }
 </script>
+<script src="lock.js"></script>
+
  </body>
 </html>
