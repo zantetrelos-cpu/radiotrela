@@ -1,7 +1,66 @@
-<iframe src="https://minnit.chat/zakynthos?embed" 
-        style="width:100%;height:100%;border:none;display:block;" 
-        frameborder="0" 
-        scrolling="no"
-        sandbox="allow-forms allow-scripts allow-same-origin allow-popups-to-escape-sandbox">
-</iframe>
-<script src="lock.js"></script>
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Full Screen</title>
+    <style>
+        /* Μηδενισμός περιθωρίων για να πιάνει όλη την οθόνη */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Εμποδίζει το διπλό scroll */
+        }
+        #chat-wrapper {
+            width: 100vw;
+            height: 100vh;
+        }
+        iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chat-wrapper">
+    <iframe 
+        id="myChat"
+        src="https://minnit.chat/zakynthos?embed" 
+        sandbox="allow-forms allow-scripts allow-same-origin"
+        allow="autoplay; camera; microphone; display-capture">
+    </iframe>
+</div>
+
+<script>
+    const iframe = document.getElementById('myChat');
+
+    function refreshChat() {
+        console.log("Ανανέωση λόγω μπλοκαρίσματος...");
+        const currentSrc = iframe.src;
+        iframe.src = ''; 
+        iframe.src = currentSrc;
+    }
+
+    // Ανίχνευση προσπάθειας ανοίγματος pop-up που οδηγεί σε άσπρη σελίδα
+    window.addEventListener('error', function(e) {
+        refreshChat();
+    }, true);
+
+    // Έλεγχος ανά 2 δευτερόλεπτα για να "προλαβαίνουμε" το κόλλημα
+    setInterval(function() {
+        try {
+            if (!iframe.contentWindow || iframe.contentWindow.length === 0) {
+                refreshChat();
+            }
+        } catch (e) {
+            // Το cross-origin error είναι φυσιολογικό, το αγνοούμε
+        }
+    }, 2000);
+</script>
+
+</body>
+</html>
