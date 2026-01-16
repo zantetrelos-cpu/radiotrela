@@ -246,8 +246,8 @@
   };
   firebase.initializeApp(firebaseConfig);
 
-  // ΑΥΤΗ Η ΓΡΑΜΜΗ ΓΥΡΙΖΕΙ ΤΟ EMAIL ΚΑΙ ΤΗ ΣΕΛΙΔΑ ΣΤΑ ΕΛΛΗΝΙΚΑ
-  firebase.auth().useDeviceLanguage(); 
+  // ΑΥΤΗ Η ΓΡΑΜΜΗ ΕΙΝΑΙ Η "ΔΥΝΑΤΗ" ΕΝΤΟΛΗ ΓΙΑ ΕΛΛΗΝΙΚΑ
+  firebase.auth().languageCode = 'el'; 
 
   function login() {
     const email = document.getElementById('email').value;
