@@ -227,29 +227,24 @@ body {
 <!-- Footer -->
 
 <!-- buton-->
-<button id="openBtn" aria-label="Άνοιγμα σελίδας">Αρχική σελίδα</button>
-<button id="liveBtn" aria-label="Άνοιγμα ζωντανής συνομιλίας" style="left: 155px;">Άνοιγμα ζωντανή συνομιλία ράδιο live</button>
-
-<script>
-  // Λειτουργία για το κουμπί Αρχική
-  document.getElementById('openBtn').addEventListener('click', function(){
-    try {
-      const path = location.pathname.split('/').pop();
-      if (path === '' || path === '../index.html') {
+ <button id="openBtn" aria-label="Άνοιγμα σελίδας">Αρχική σελίδα </button>
+  <script>
+    document.getElementById('openBtn').addEventListener('click', function(){
+      // Open the same page (xat.html) in the same window — not a new tab
+      try{
+        // If current path already points to xat.html (or root), just reload
+        const path = location.pathname.split('/').pop();
+        if (path === '' || path === '../index.html') {
+          location.reload();
+        } else {
+          location.href = '../index.html';
+        }
+      } catch (e) {
+        // Fallback: reload
         location.reload();
-      } else {
-        location.href = '../index.html';
       }
-    } catch (e) {
-      location.reload();
-    }
-  });
-
-  // Λειτουργία για το κουμπί Radio Live
-  document.getElementById('liveBtn').addEventListener('click', function(){
-    location.href = '../chat radio.html';
-  });
-</script>
+    });
+  </script>
   <!-- buton-->
   
   <!-- Ρολόι -->
