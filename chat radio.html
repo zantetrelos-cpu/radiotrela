@@ -123,6 +123,7 @@ body {
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
  </head>
 <body>
+<!--  forma arxi body -->
  <div id="auth-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background-image: url('7.png'); background-repeat: no-repeat; background-attachment: fixed; background-size: 100% 100%; z-index:99999; display:flex; justify-content:center; align-items:center;">
     
     <div style="display:flex; flex-direction:column; align-items:center; width:90%;">
@@ -131,7 +132,7 @@ body {
            ΦΟΡΜΑ ΕΓΓΡΑΦΗΣ ΓΙΑ ΡΑΔΙΟ ΣΥΝΕΦΑ CHAT LIVE
       </div>
 
-      <div style="background:rgba(26, 26, 26, 0.85); padding:30px; border-radius:15px; text-align:center; border:2px solid #ff0000; width:100%; max-width:500px; color:white; backdrop-filter: blur(5px); box-sizing: border-box;">
+      <div style="background:rgba(26, 26, 26, 0.85); padding:30px; border-radius:15px; text-align:center; border:2px solid #ff0000; width:100%; max-width:600px; color:white; backdrop-filter: blur(5px); box-sizing: border-box;">
        
         <input type="email" id="email" placeholder="Email" style="width:95%; padding:12px; margin:10px 0; border-radius:5px; border:none;">
         <input type="password" id="password" placeholder="Κωδικός (6+ χαρακτήρες)" style="width:95%; padding:12px; margin:10px 0; border-radius:5px; border:none;">
@@ -148,6 +149,13 @@ body {
           <button onclick="document.getElementById('radio-modal').style.display='flex'" style="position:relative; top:0; left:0; background:rgba(0,0,0,0.6); color:white; border:1px solid white; padding:8px 15px; border-radius:20px; cursor:pointer; font-size:13px;">
               📻 Πληροφορίες  ζωντανή συνομιλία
           </button>
+		 
+		  
+		   <button onclick="window.location.href='anigi automata/automatoplayer.html'" style="position:relative; top:0; left:0; background:rgba(0,0,0,0.6); color:white; border:1px solid white; padding:8px 15px; border-radius:20px; cursor:pointer; font-size:13px;">
+              ΕΠΙΣΤΡΟΦΗ ΣΤΟ PLAYER
+          </button>
+		  
+		  
       </div>
 
     </div>
@@ -219,6 +227,7 @@ body {
         <button onclick="document.getElementById('radio-modal').style.display='none'" style="position:relative; top:0; left:0; margin-top:20px; width:100%; background:#ff0000; color:white; border:none; padding:12px; border-radius:5px; cursor:pointer; font-weight:bold;">ΚΛΕΙΣΙΜΟ</button>
     </div>
 </div>
+<!--  forma arxi body -->
  <div id="mainBody" style="display:none;">
 
 <center>
