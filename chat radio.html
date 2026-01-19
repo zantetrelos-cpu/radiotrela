@@ -19,17 +19,15 @@
 
 <link rel="shortcut icon" href="zante.ico">
   
-  <style>
+ <style>
   html, body {
     overflow-x: hidden;
     margin: 0;
     padding: 0;
   }
 </style>
-<link rel="stylesheet" href="mpara me xroma/appgrade.css">
+
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
-
-
 
 <style>
 .neon-text {
@@ -51,7 +49,6 @@
   animation: neonWave 2s infinite ease-in-out;
 }
 
-/* Κίνηση / παλμός */
 @keyframes neonWave {
   0%, 100% {
     transform: translateY(0px);
@@ -69,40 +66,47 @@
   }
 }
 
-/* Προαιρετικά: κάθε γράμμα έχει ελαφρώς διαφορετική φάση για κυματισμό */
 .neon-text span::after {
   content: attr(data-char);
 }
 
+/* FOOTER STYLE - ΜΕΤΑΦΕΡΘΗΚΕ ΕΔΩ ΓΙΑ ΝΑ ΜΗΝ ΒΓΑΖΕΙ ERROR */
+.site-footer {
+  margin-top: auto; 
+  text-align: center;
+  padding: 15px 0;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+.site-footer a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.site-footer a:hover {
+  color: #ff00ff;
+}
+.site-footer span {
+  color: #fff;
+  text-shadow: 0 0 4px #ff00ff, 0 0 8px #ff00ff, 0 0 12px #00ffff;
+  animation: footerFlicker 3s infinite alternate;
+}
+@keyframes footerFlicker {
+  0%, 100% { text-shadow: 0 0 4px #ff00ff, 0 0 8px #ff00ff, 0 0 12px #00ffff; }
+  50% { text-shadow: 0 0 6px #ff00ff, 0 0 12px #ff00ff, 0 0 18px #00ffff; }
+}
+
 </style>
 
-<script>
-// Κάνουμε κάθε γράμμα να είναι ξεχωριστό για κυματισμό
-const text = document.querySelector('.neon-text span');
-const letters = text.textContent.split('');
-text.textContent = '';
-letters.forEach((letter, i) => {
-  const span = document.createElement('span');
-  span.textContent = letter;
-  span.style.animationDelay = `${i * 0.1}s`; // διαφορά φάσης
-  text.appendChild(span);
-});
-</script>
 <style>
-    html,body{height:100%;margin:0}
-    /* Button top-left only */
+    html,body{height:100%;margin:0; background-color: #0b0c10;}
     button{position:fixed;top:15px;left:8px;padding:10px 16px;font-size:16px;background-color:#cc0099;color:#fff;border:none;border-radius:8px;cursor:pointer;transition:background-color 0.3s ease, transform 0.2s ease;}
       button:hover{background-color:#0056b3;transform:scale(1.05);}    
   </style>
   <style>
- /* Το ρολόι πάνω δεξιά μόνο */
     .clock{position:fixed;top:12px;right:12px;padding:12px 18px;border-radius:12px;background:rgba(0,0,0,0.75);color:#fff;font-family:system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;text-align:center;box-shadow:0 6px 18px rgba(255, 51, 204,0.35);line-height:1.4;min-width:180px;}
     .time{font-size:24px;font-weight:700;letter-spacing:0.8px;text-align:center;text-shadow:0 0 8px rgba(255,255,255,0.8), 0 0 15px rgba(0,128,255,0.7);}
-    .date{
-      font-size:13px;
-      opacity:0.95;
-      margin-top:4px;
-    }
+    .date{font-size:13px; opacity:0.95; margin-top:4px;}
     @media (max-width:420px){
       .clock{right:8px;left:auto;min-width:140px;padding:8px}
       .time{font-size:18px}
@@ -116,20 +120,17 @@ body {
   background-attachment: fixed; 
   background-size: 100% 100%;
 }
-
-
 </style>
-	<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+ <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
  </head>
 <body>
-<!--  forma arxi body -->
- <div id="auth-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background-image: url('7.png'); background-repeat: no-repeat; background-attachment: fixed; background-size: 100% 100%; z-index:99999; display:flex; justify-content:center; align-items:center;">
+<div id="auth-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background-image: url('7.png'); background-repeat: no-repeat; background-attachment: fixed; background-size: 100% 100%; z-index:99999; display:flex; justify-content:center; align-items:center;">
     
     <div style="display:flex; flex-direction:column; align-items:center; width:90%;">
 
       <div style="color:white; margin-bottom:15px; font-size:18px; font-weight:bold; text-shadow: 2px 2px 4px #000; text-align:center;">
-           ΦΟΡΜΑ ΕΓΓΡΑΦΗΣ ΓΙΑ ΡΑΔΙΟ ΣΥΝΕΦΑ CHAT LIVE
+            ΦΟΡΜΑ ΕΓΓΡΑΦΗΣ ΓΙΑ ΡΑΔΙΟ ΣΥΝΕΦΑ CHAT LIVE
       </div>
 
       <div style="background:rgba(26, 26, 26, 0.85); padding:30px; border-radius:15px; text-align:center; border:2px solid #ff0000; width:100%; max-width:600px; color:white; backdrop-filter: blur(5px); box-sizing: border-box;">
@@ -149,13 +150,13 @@ body {
           <button onclick="document.getElementById('radio-modal').style.display='flex'" style="position:relative; top:0; left:0; background:rgba(0,0,0,0.6); color:white; border:1px solid white; padding:8px 15px; border-radius:20px; cursor:pointer; font-size:13px;">
               📻 Πληροφορίες  ζωντανή συνομιλία
           </button>
-		 
-		  
-		   <button onclick="window.location.href='anigi automata/automatoplayer.html'" style="position:relative; top:0; left:0; background:rgba(0,0,0,0.6); color:white; border:1px solid white; padding:8px 15px; border-radius:20px; cursor:pointer; font-size:13px;">
+         
+          
+           <button onclick="window.location.href='anigiautomata/automatoplayer.html'" style="position:relative; top:0; left:0; background:rgba(0,0,0,0.6); color:white; border:1px solid white; padding:8px 15px; border-radius:20px; cursor:pointer; font-size:13px;">
               ΕΠΙΣΤΡΟΦΗ ΣΤΟ PLAYER
           </button>
-		  
-		  
+          
+          
       </div>
 
     </div>
@@ -180,7 +181,7 @@ body {
 
             <p><strong>Είσοδος:</strong> Πατήστε τον σύνδεσμο μέσα στο email και είστε έτοιμοι! Τώρα μπορείτε να κάνετε "Είσοδο" κανονικά.</p>
 
-            <p style="border-top: 1px solid #444; pt-10; margin-top:10px;">
+            <p style="border-top: 1px solid #444; padding-top: 10px; margin-top:10px;">
                 <strong>Είναι ασφαλές;</strong> Φυσικά! Χρησιμοποιούμε την πλατφόρμα Firebase της Google, οπότε ο λογαριασμός σας είναι θωρακισμένος και τα δεδομένα σας παραμένουν ιδιωτικά.
             </p>
         </div>
@@ -227,13 +228,12 @@ body {
         <button onclick="document.getElementById('radio-modal').style.display='none'" style="position:relative; top:0; left:0; margin-top:20px; width:100%; background:#ff0000; color:white; border:none; padding:12px; border-radius:5px; cursor:pointer; font-weight:bold;">ΚΛΕΙΣΙΜΟ</button>
     </div>
 </div>
-<!--  forma arxi body -->
- <div id="mainBody" style="display:none;">
+<div id="mainBody" style="display:none;">
 
-<center>
+<div style="text-align: center;">
 <h1 class="neon-text">
  <span>chat live</span> <span>Radio Synnefa </span>
-</h1></center>
+</h1></div>
 <div style="
   display: flex;
   justify-content: center;
@@ -246,15 +246,11 @@ body {
 ">
 
   <div style="flex:1;min-width:480px;max-width:1000px;aspect-ratio:16/9;border:4px solid rgba(255, 255, 255, 0.3);border-radius:20px;overflow:hidden;">
-    <iframe src="monochat.html"
-        style="width:100%;height:100%;border:none;display:block;overflow:hidden;"
-        frameborder="0"
-        scrolling="no"></iframe></div>
+    <iframe src="monochat.html" title="Chat"
+        style="width:100%;height:100%;border:none;display:block;overflow:hidden;"></iframe></div>
 <div style="flex:1;min-width:480px;max-width:900px;aspect-ratio:16/9;border:4px solid rgba(255, 255, 255, 0.3);border-radius:20px;overflow:hidden;">
-    <iframe src="anigi automata/DOKIMI.html"
-        style="width:100%;height:100%;border:none;display:block;overflow:hidden;"
-        frameborder="0"
-        scrolling="no"></iframe> </div></div>
+    <iframe src="anigiautomata/player.html" title="Player"
+        style="width:100%;height:100%;border:none;display:block;overflow:hidden;"></iframe> </div></div>
 <footer class="site-footer">
   <p>
     <span>© 2025 Radio Synnefa. Όλα τα δικαιώματα διατηρούνται. </span>
@@ -263,67 +259,11 @@ body {
   <p>Design και ανάπτυξη: <span>Radio Synnefa</span></p>
 </footer>
 
-</div> <style>
-body {
-  margin: 0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  font-family: 'Orbitron', sans-serif;
-  background-color: #0b0c10;
-}
-
-/* Footer στο τέλος της σελίδας */
-.site-footer {
-  margin-top: auto; /* πάντα κάτω */
-  text-align: center;
-  padding: 15px 0;
-  font-size: 0.9rem;
-  color: #ccc;
-}
-
-.site-footer a {
-  color: #fff;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.site-footer a:hover {
-  color: #ff00ff;
-}
-
-/* Neon λάμψη για το design credit */
-.site-footer span {
-  color: #fff;
-  text-shadow:
-    0 0 4px #ff00ff,
-    0 0 8px #ff00ff,
-    0 0 12px #00ffff;
-  animation: footerFlicker 3s infinite alternate;
-}
-
-/* Απαλός flicker */
-@keyframes footerFlicker {
-  0%, 100% {
-    text-shadow:
-      0 0 4px #ff00ff,
-      0 0 8px #ff00ff,
-      0 0 12px #00ffff;
-  }
-  50% {
-    text-shadow:
-      0 0 6px #ff00ff,
-      0 0 12px #ff00ff,
-      0 0 18px #00ffff;
-  }
-}
-</style>
+</div> 
 <button id="openBtn" aria-label="Άνοιγμα σελίδας" style="display:none;">αρχική σελίδα</button>
   <script>
     document.getElementById('openBtn').addEventListener('click', function(){
-      // Open the same page (xat.html) in the same window — not a new tab
       try{
-        // If current path already points to xat.html (or root), just reload
         const path = location.pathname.split('/').pop();
         if (path === '' || path === 'index.html') {
           location.reload();
@@ -331,7 +271,6 @@ body {
           location.href = 'index.html';
         }
       } catch (e) {
-        // Fallback: reload
         location.reload();
       }
     });
@@ -341,7 +280,6 @@ body {
     <div class="date" id="date">-------</div>
   </div>
   <script>
-    // Εμφανίζει ώρα (ώρες:λεπτά:δευτερόλεπτα) και ημέρα, ημερομηνία, χρονολογία με γράμματα στα Ελληνικά
     const timeEl = document.getElementById('time');
     const dateEl = document.getElementById('date');
 
@@ -355,17 +293,25 @@ body {
 
     function updateClock(){
       const now = new Date();
-      // Χρόνος
       timeEl.textContent = timeFmt.format(now);
-      // Ημέρα και ημερομηνία με γράμματα, π.χ. "Σάββατο, 1 Νοεμβρίου 2025"
-      // Intl θα δώσει μορφοποίηση όπως 'Σάββατο, 1 Νοεμβρίου 2025'
       const parts = dayDateFmt.format(now);
       dateEl.textContent = parts.charAt(0).toUpperCase() + parts.slice(1);
     }
-
-    // Εκτέλεση άμεσα και κάθε δευτερόλεπτο
     updateClock();
     setInterval(updateClock, 1000);
+
+    // Neon Letters Script
+    const text = document.querySelector('.neon-text span');
+    if(text){
+        const letters = text.textContent.split('');
+        text.textContent = '';
+        letters.forEach((letter, i) => {
+            const span = document.createElement('span');
+            span.textContent = letter;
+            span.style.animationDelay = `${i * 0.1}s`;
+            text.appendChild(span);
+        });
+    }
   </script>
   <script>
   const firebaseConfig = {
@@ -377,8 +323,6 @@ body {
     appId: "1:525889449189:web:911a404cf8dd15e479780c"
   };
   firebase.initializeApp(firebaseConfig);
-  
-  // Ρύθμιση για Ελληνικά
   firebase.auth().languageCode = 'el'; 
 
   function login() {
@@ -419,7 +363,6 @@ body {
       });
   }
 
-  // ΝΕΑ ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΕΠΑΝΑΦΟΡΑ ΚΩΔΙΚΟΥ
   function resetPassword() {
     const email = document.getElementById('email').value;
     if (!email) {
@@ -440,6 +383,5 @@ body {
   }
 </script>
 <script src="lock.js"></script>
-
  </body>
 </html>
