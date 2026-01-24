@@ -125,9 +125,10 @@ body {
 <style>
 body { margin:0; font-family:Arial,sans-serif; overflow:hidden; }
 
-#openBtn {
+/* ΔΙΟΡΘΩΜΕΝΟ: Όνομα openLiveBtn και θέση bottom για να είναι τέρμα κάτω */
+#openLiveBtn {
   position: fixed;
-  bottom: 10px;
+  bottom: 20px; 
   left: 10px;
   padding: 10px 20px;
   background-color: #cc3399;
@@ -153,14 +154,13 @@ body { margin:0; font-family:Arial,sans-serif; overflow:hidden; }
   overflow: hidden;
 }
 
-/* Το νέο στυλ για το μήνυμα καλωσορίσματος */
 #welcomeMsg {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   color: white;
   display: flex;
   align-items: center;
@@ -168,7 +168,7 @@ body { margin:0; font-family:Arial,sans-serif; overflow:hidden; }
   text-align: center;
   padding: 20px;
   z-index: 10;
-  pointer-events: none; /* Για να μην εμποδίζει το κλικ αν χρειαστεί */
+  pointer-events: none;
   transition: opacity 0.5s ease;
 }
 
