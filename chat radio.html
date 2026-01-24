@@ -409,7 +409,7 @@ body { margin:0; font-family:Arial,sans-serif; overflow:hidden; }
     }
   </script>
   <!-- mono live tv  -->
-<button id="openLiveBtn">Άνοιγμα Live Streaming</button>
+<button id="openLiveBtn" style="position:fixed; bottom:20px; left:10px; width:auto; height:auto; z-index:9999;">Άνοιγμα Live Streaming</button>
 
 <div id="videoContainer">
  <div id="welcomeMsg" style="display: none;">
@@ -431,7 +431,7 @@ body { margin:0; font-family:Arial,sans-serif; overflow:hidden; }
 
 <script>
 // Εδώ έγινε η αλλαγή στο getElementById
-const openBtn = document.getElementById('openLiveBtn'); 
+const openBtn = document.getElementById('openLiveBtn');
 const videoContainer = document.getElementById('videoContainer');
 const dragOverlay = document.getElementById('dragOverlay');
 const resizeHandle = document.getElementById('resizeHandle');
