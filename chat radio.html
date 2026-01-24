@@ -125,10 +125,9 @@ body {
 <style>
 body { margin:0; font-family:Arial,sans-serif; overflow:hidden; }
 
-/* ΔΙΟΡΘΩΜΕΝΟ: Όνομα openLiveBtn και θέση bottom για να είναι τέρμα κάτω */
-#openLiveBtn {
+#tvOpenBtn {
   position: fixed;
-  bottom: 20px; 
+  bottom: 10px;
   left: 10px;
   padding: 10px 20px;
   background-color: #cc3399;
@@ -154,13 +153,14 @@ body { margin:0; font-family:Arial,sans-serif; overflow:hidden; }
   overflow: hidden;
 }
 
+/* Το νέο στυλ για το μήνυμα καλωσορίσματος */
 #welcomeMsg {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.8);
   color: white;
   display: flex;
   align-items: center;
@@ -216,6 +216,7 @@ body { margin:0; font-family:Arial,sans-serif; overflow:hidden; }
 }
 </style>
 <!-- mono live tv  -->
+
  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
  </head>
@@ -409,7 +410,7 @@ body { margin:0; font-family:Arial,sans-serif; overflow:hidden; }
     }
   </script>
   <!-- mono live tv  -->
-<button id="openLiveBtn" style="position:fixed; bottom:20px; left:10px; width:auto; height:auto; z-index:9999;">Άνοιγμα Live Streaming</button>
+<button id="tvOpenBtn">Άνοιγμα Live Streaming</button>
 
 <div id="videoContainer">
  <div id="welcomeMsg" style="display: none;">
@@ -419,19 +420,18 @@ body { margin:0; font-family:Arial,sans-serif; overflow:hidden; }
     <p style="font-size: 0.9em; color: #ffff00;">
       Σύρετε για μετακίνηση & μεγαλώστε<br> το παράθυρο από την κάτω δεξιά γωνία.
     </p>
-	<h3>μετακινήσετε το παράθυρο tv όπου σας βολεύει</h3>
+    <h3>μετακινήσετε το παράθυρο tv όπου σας βολεύει</h3>
   </div>
 </div>
-  
+
   <div id="dragOverlay"></div>
   <iframe id="liveFrame" allow="autoplay; fullscreen" allowfullscreen></iframe>
   <div id="resizeHandle"></div>
-  <div id="closeBtn">×</div>
+  <div id="closeBtn">?</div>
 </div>
 
 <script>
-// Εδώ έγινε η αλλαγή στο getElementById
-const openBtn = document.getElementById('openLiveBtn');
+const openBtn = document.getElementById('tvOpenBtn');
 const videoContainer = document.getElementById('videoContainer');
 const dragOverlay = document.getElementById('dragOverlay');
 const resizeHandle = document.getElementById('resizeHandle');
@@ -444,20 +444,20 @@ const liveURL = "https://vdo.ninja/?view=SiDsgNa&cleanoutput&transparent&autopla
 openBtn.addEventListener('click', () => {
   iframe.src = liveURL;
   videoContainer.style.display = 'block';
-  
+
   welcomeMsg.style.display = 'flex';
   welcomeMsg.style.opacity = '1';
-  
+
   setTimeout(() => {
     welcomeMsg.style.opacity = '0';
     setTimeout(() => {
       welcomeMsg.style.display = 'none';
-    }, 500); 
-  }, 10000); 
+    }, 500);
+  }, 10000);
 });
 
 closeBtn.addEventListener('click', () => {
-  iframe.src = "";  
+  iframe.src = "";
   videoContainer.style.display = 'none';
   welcomeMsg.style.display = 'none';
 });
@@ -495,9 +495,10 @@ document.addEventListener('mousemove',(e)=>{
   if(isResizing){
     let nw=rw + (e.clientX - rx);
     let nh=rh + (e.clientY - ry);
-    nw=Math.max(200,nw); nh=Math.max(150,nh);
+    nw=Math.max(200,nw); 
+    nh=Math.max(150,nh);
     nw=Math.min(window.innerWidth - videoContainer.offsetLeft,nw);
-    nh=nh=Math.min(window.innerHeight - videoContainer.offsetTop,nh);
+    nh=Math.min(window.innerHeight - videoContainer.offsetTop,nh);
     videoContainer.style.width=nw+'px';
     videoContainer.style.height=nh+'px';
   }
@@ -506,7 +507,10 @@ document.addEventListener('mouseup',()=>{isResizing=false;});
 </script>
 
 <!-- mono live tv  -->
-  
+
+
+
+
   <script>
   const firebaseConfig = {
     apiKey: "AIzaSyCUt5Y_-mzz7t7PlmBsv6UXGdU22pVCsqs",
