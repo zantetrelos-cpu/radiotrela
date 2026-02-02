@@ -2,8 +2,6 @@
 <html lang="el">
 <head>
  <meta charset="utf-8">
-
- 
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>Ράδιο Σύννεφα - Radio Synnefa - Radio Sinefa | Το πιο ερωτικό ραδιόφωνο</title>
@@ -44,7 +42,6 @@
             background-size: 100% 100%;
         }
 
-        /* Μικρά άσπρα γράμματα τέρμα πάνω στην κορυφή του intro */
         #top-header-text {
             position: absolute;
             top: 10px;
@@ -70,6 +67,16 @@
             position: relative;
         }
 
+        /* Στυλ για την αρχική εικόνα */
+        #intro-logo {
+            max-width: 450px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
         #main-radio-content {
             display: none; 
             opacity: 0;
@@ -91,6 +98,7 @@
             width: 100%; 
             padding: 20px; 
             transition: opacity 1s ease;
+            display: none; /* Ξεκινάει κρυφό για να φανεί η φωτό */
         }
 
         #entry-button {
@@ -169,15 +177,14 @@
         .cursor { display: inline-block; width: 8px; height: 1.2rem; background-color: #ff0000; margin-left: 5px; animation: cursorBlink 0.7s infinite; vertical-align: middle; }
         @keyframes cursorBlink { 50% { opacity: 0; } }
     </style>
-	<!-- kodikas  kimeno  -->
-	<!--   mpara mr xroma  -->
 <link rel="stylesheet" href="mparaxroma/appgrade.css">
-<!--   mpara mr xroma  -->
 </head>
 <body>
 
 <div id="intro-screen">
     <div id="top-header-text">Ράδιο Σύννεφα - Radio Synnefa</div>
+
+    <img src="sinnefa.png" id="intro-logo" alt="Logo">
 
     <div id="text-wrapper">
         <div id="display"></div>
@@ -215,11 +222,29 @@
     const introScreen = document.getElementById('intro-screen');
     const mainContent = document.getElementById('main-radio-content');
     const radioPlayer = document.getElementById('radio-player');
+    const introLogo = document.getElementById('intro-logo');
 
     let lineIndex = 0;
     let charIndex = 0;
     let isSkipped = false;
     let mouseTimer;
+
+    // Λειτουργία για την εκκίνηση του Intro με την εικόνα
+    function startSequence() {
+        // Εμφάνιση εικόνας
+        introLogo.style.opacity = "1";
+        
+        // Μετά από 3 δευτερόλεπτα, εξαφάνιση εικόνας και έναρξη κειμένου
+        setTimeout(() => {
+            if (isSkipped) return;
+            introLogo.style.opacity = "0";
+            setTimeout(() => {
+                introLogo.style.display = "none";
+                textWrapper.style.display = "block";
+                type();
+            }, 1000);
+        }, 3000);
+    }
 
     function type() {
         if (isSkipped) return; 
@@ -252,11 +277,9 @@
         mainCursor.style.display = 'none';
         skipButton.style.display = 'none'; 
         
-        // ΠΡΩΤΑ περιμένουμε 9 δευτερόλεπτα με το κείμενο ορατό
         setTimeout(() => {
-            textWrapper.style.opacity = "0"; // Τώρα σβήνει το κείμενο
+            textWrapper.style.opacity = "0"; 
             
-            // Μετά από 1 δευτερόλεπτο που χρειάζεται το σβήσιμο, φέρνουμε το κουμπί
             setTimeout(() => {
                 textWrapper.style.display = "none";
                 entryButton.style.display = "block";
@@ -265,19 +288,19 @@
                 }, 100);
             }, 1000); 
             
-        }, 2000); // <--- Εδώ είναι τα 9 δευτερόλεπτα που το κείμενο μένει στην οθόνη
+        }, 2000); 
     }
 
     function skipIntro() {
         isSkipped = true;
+        introLogo.style.display = "none";
+        textWrapper.style.display = "none";
         finishIntro();
     }
 
     document.addEventListener('mousemove', () => {
         if (isSkipped || entryButton.style.display === "block") return;
-
         skipButton.style.opacity = "1"; 
-
         clearTimeout(mouseTimer);
         mouseTimer = setTimeout(() => {
             skipButton.style.opacity = "0"; 
@@ -295,12 +318,13 @@
         }, 1000);
     }
 
-    window.onload = type;
+    window.onload = startSequence; // Ξεκινάει με την αλληλουχία της εικόνας
 </script>
+
+
 <script src="lock.js"></script>
 </body>
 </html>
-
 
 
 
