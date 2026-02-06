@@ -213,6 +213,7 @@
  <!--  forma egrafis  -->
  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
  <!--  forma egrafis  -->
 </head>
 <body>
@@ -526,41 +527,30 @@
       });
   }
 
-  function register() {
-    const email = document.getElementById('email').value;
-    const pass = document.getElementById('password').value;
-    firebase.auth().createUserWithEmailAndPassword(email, pass)
-      .then((userCredential) => {
-        userCredential.user.sendEmailVerification().then(() => {
-          const msgElement = document.getElementById('msg');
-          msgElement.style.color = "#00FF00"; 
-          msgElement.innerText = "Η εγγραφή έγινε! Σας στείλαμε email επιβεβαίωσης.";
-        });
-      })
-      .catch((err) => { 
-        document.getElementById('msg').style.color = "red";
-        document.getElementById('msg').innerText = "Σφάλμα: " + err.message; 
+ function register() {
+  const email = document.getElementById('email').value;
+  const pass = document.getElementById('password').value;
+  
+  firebase.auth().createUserWithEmailAndPassword(email, pass)
+    .then((userCredential) => {
+      // ΕΔΩ ΕΙΝΑΙ Η ΕΝΤΟΛΗ ΠΟΥ ΓΡΑΦΕΙ ΣΤΗ ΒΑΣΗ ΔΕΔΟΜΕΝΩΝ
+      const userId = userCredential.user.uid;
+      firebase.database().ref('users/' + userId).set({
+        email: email,
+        registeredAt: new Date().toLocaleString('el-GR')
       });
-  }
 
-  function resetPassword() {
-    const email = document.getElementById('email').value;
-    if (!email) {
-      document.getElementById('msg').style.color = "red";
-      document.getElementById('msg').innerText = "Γράψε πρώτα το email σου παραπάνω.";
-      return;
-    }
-    firebase.auth().sendPasswordResetEmail(email)
-      .then(() => {
+      userCredential.user.sendEmailVerification().then(() => {
         const msgElement = document.getElementById('msg');
-        msgElement.style.color = "#00FF00";
-        msgElement.innerText = "Σου στείλαμε email για αλλαγή κωδικού!";
-      })
-      .catch((err) => {
-        document.getElementById('msg').style.color = "red";
-        document.getElementById('msg').innerText = "Σφάλμα: " + err.message;
+        msgElement.style.color = "#00FF00"; 
+        msgElement.innerText = "Η εγγραφή έγινε! Σας στείλαμε email επιβεβαίωσης.";
       });
-  }
+    })
+    .catch((err) => { 
+      document.getElementById('msg').style.color = "red";
+      document.getElementById('msg').innerText = "Σφάλμα: " + err.message; 
+    });
+}
 </script>
 
  <!--  forma egrafis  -->	
