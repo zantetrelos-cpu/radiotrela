@@ -536,11 +536,12 @@
   firebase.auth().createUserWithEmailAndPassword(email, pass)
     .then((userCredential) => {
       const userId = userCredential.user.uid;
-      // ΕΔΩ ΕΙΝΑΙ Η ΔΙΟΡΘΩΣΗ: Προσθέτουμε το πεδίο "υπηρέτης"
+
+      // ΕΔΩ ΜΠΑΙΝΕΙ Ο ΚΩΔΙΚΑΣ:
       firebase.database().ref('users/' + userId).set({
         email: email,
         registeredAt: new Date().toLocaleString('el-GR'),
-        υπηρέτης: window.location.hostname
+        υπηρέτης: "Radio Synnefa Server"
       });
 
       userCredential.user.sendEmailVerification().then(() => {
