@@ -98,6 +98,12 @@
         cursor: pointer;
         font-size: 14px;
         margin-top: 15px;
+        transition: background 0.3s; /* Για να αλλάζει ομαλά */
+    }
+
+    /* ΑΥΤΟ ΠΡΟΣΤΕΘΗΚΕ: Αλλαγή χρώματος στο hover */
+    .info-btn:hover {
+        background: #0066ff; 
     }
 
     /* Το φόντο του modal (κλείνει όλη την οθόνη) */
@@ -116,7 +122,7 @@
     /* Το πλαίσιο του περιεχομένου */
    .modal-content {
         background: #2a2a2a;
-        margin: 5% auto; /* Το ανέβασες πιο πάνω */
+        margin: 5% auto; 
         padding: 30px;
         border: 2px solid #ff3300;
         width: 80%;
@@ -124,11 +130,10 @@
         border-radius: 15px;
         text-align: center;
         position: relative;
-        color: white; /* Γενικό χρώμα (π.χ. άσπρο) */
+        color: white; 
         box-shadow: 0 5px 60px rgba(0, 102, 255,0.5);
     }
 
-    /* Πρόσθεσε αυτά ακριβώς από κάτω για να ξεχωρίσεις τα χρώματα */
     .modal-content h3 {
         color: #007bff; /* Μπλε χρώμα στον τίτλο */
     }
@@ -164,16 +169,47 @@
     }
 </script>
 	<!--Πληροφορίες -->
-	
-	
+	 <!--piso player -->
+<style>
+  .back-button {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    background-color: #ff33cc;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-family: sans-serif;
+    font-weight: bold;
+    text-align: center;
+    margin: 10px 0;
+    /* Η κίνηση να γίνεται ομαλά */
+    transition: all 0.2s ease-in-out; 
+  }
+
+  /* Τι συμβαίνει όταν ακουμπάς το ποντίκι */
+  .back-button:hover {
+    background-color: #0069d9; /* Σκουραίνει ελαφρώς */
+    transform: scale(0.98);    /* "Κουνιέται" - μικραίνει ελάχιστα σαν να πατιέται */
+    opacity: 0.9;              /* Γίνεται λίγο πιο διάφανο */
+  }
+</style>
+ <!--piso player -->	
 </head>
 <body>
 
     <div class="card">
         <div id="signup-box" class="fade-in">
+		
 		      <!--Πληροφορίες -->
          <button type="button" class="info-btn" onclick="openModal()">Πληροφορίες για την εγγραφή</button>
              <!--Πληροφορίες -->
+			  <!--piso player -->
+			 <a href="anigiautomata/automatoplayer.html" class="back-button">
+  Πίσω στο Player
+</a>
+			 <!--piso player -->
             <input type="email" id="email" placeholder="Email">
             <input type="password" id="password" placeholder="Κωδικός">
             <button class="btn-signup" onclick="signUp()">Εγγραφή & Επιβεβαίωση</button>
