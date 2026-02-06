@@ -535,11 +535,12 @@
   
   firebase.auth().createUserWithEmailAndPassword(email, pass)
     .then((userCredential) => {
-      // ΕΔΩ ΕΙΝΑΙ Η ΕΝΤΟΛΗ ΠΟΥ ΓΡΑΦΕΙ ΣΤΗ ΒΑΣΗ ΔΕΔΟΜΕΝΩΝ
       const userId = userCredential.user.uid;
+      // ΕΔΩ ΕΙΝΑΙ Η ΔΙΟΡΘΩΣΗ: Προσθέτουμε το πεδίο "υπηρέτης"
       firebase.database().ref('users/' + userId).set({
         email: email,
-        registeredAt: new Date().toLocaleString('el-GR')
+        registeredAt: new Date().toLocaleString('el-GR'),
+        υπηρέτης: window.location.hostname
       });
 
       userCredential.user.sendEmailVerification().then(() => {
