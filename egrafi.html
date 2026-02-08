@@ -169,33 +169,26 @@
     }
 </script>
 	<!--Πληροφορίες -->
-	 <!--piso player -->
 <style>
-  .back-button {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px;
-    background-color: #ff33cc;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-family: sans-serif;
-    font-weight: bold;
-    text-align: center;
-    margin: 10px 0;
-    /* Η κίνηση να γίνεται ομαλά */
-    transition: all 0.2s ease-in-out; 
-  }
+        .back-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007bff; /* Μπλε χρώμα */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            z-index: 1000; /* Για να είναι πάνω από όλα τα στοιχεία */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
 
-  /* Τι συμβαίνει όταν ακουμπάς το ποντίκι */
-  .back-button:hover {
-    background-color: #0069d9; /* Σκουραίνει ελαφρώς */
-    transform: scale(0.98);    /* "Κουνιέται" - μικραίνει ελάχιστα σαν να πατιέται */
-    opacity: 0.9;              /* Γίνεται λίγο πιο διάφανο */
-  }
-</style>
- <!--piso player -->	
+        .back-button:hover {
+            background-color: #0056b3; /* Σκούρο μπλε στο πέρασμα του ποντικιού */
+        }
+    </style>
 </head>
 <body>
 
@@ -205,11 +198,7 @@
 		      <!--Πληροφορίες -->
          <button type="button" class="info-btn" onclick="openModal()">Πληροφορίες για την εγγραφή</button>
              <!--Πληροφορίες -->
-			  <!--piso player -->
-			 <a href="anigiautomata/automatoplayer.html" class="back-button">
-  Πίσω στο Player
-</a>
-			 <!--piso player -->
+		
             <input type="email" id="email" placeholder="Email">
             <input type="password" id="password" placeholder="Κωδικός">
             <button class="btn-signup" onclick="signUp()">Εγγραφή & Επιβεβαίωση</button>
@@ -340,7 +329,11 @@
     </div>
 </div>
 <!--Πληροφορίες -->
-
+<a href="anigiautomata/automatoplayer.html" 
+   class="back-button" 
+   target="_parent">
+   Πίσω στο player
+</a>
 <script src="lock.js"></script>
 </body>
 </html>
