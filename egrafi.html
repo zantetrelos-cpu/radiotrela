@@ -171,25 +171,52 @@
 	<!--Πληροφορίες -->
 <!--butov piso sto player -->	
 <style>
-        .back-button {
-            position: fixed;
-            top: 20px;
-              right: 20px;
-            padding: 10px 20px;
-            background-color: rgba(255, 51, 0,0.3); /* Μπλε χρώμα */
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-family: Arial, sans-serif;
-            font-weight: bold;
-            z-index: 1000; /* Για να είναι πάνω από όλα τα στοιχεία */
-            box-shadow: 0 2px 5px rgba(255, 255, 0,0.9);
-        }
+    /* Εφέ Εισόδου: Έρχεται με Zoom και μετά "κάθεται" στη θέση του */
+    .player-entrance {
+        animation: fullZoomTransition 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
 
-        .back-button:hover {
-            background-color: #00cc00; /* Σκούρο μπλε στο πέρασμα του ποντικιού */
+    @keyframes fullZoomTransition {
+        0% {
+            transform: scale(0);
+            opacity: 0;
         }
-    </style>
+        50% {
+            transform: scale(1.1); /* Μεγαλώνει λίγο παραπάνω για εφέ */
+            opacity: 1;
+        }
+        100% {
+            transform: scale(1); /* Έρχεται στο κανονικό */
+            opacity: 1;
+        }
+    }
+
+    /* Τα υπόλοιπα στυλ παραμένουν ως έχουν */
+    body.no-scroll { overflow: hidden; }
+    .back-button-player {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: auto !important;
+        display: inline-block !important;
+        padding: 10px 20px;
+        background-color: rgba(255, 51, 0, 0.3); 
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        z-index: 9999;
+        box-shadow: 0 2px 5px rgba(255, 255, 0, 0.9);
+        cursor: pointer;
+    }
+    .back-button-player:hover { background-color: #00cc00; }
+    .master-zoom-out {
+        transform: scale(3) !important;
+        opacity: 0 !important;
+        transition: all 0.8s ease-in-out !important;
+    }
+</style>
 	<!--butov piso sto player -->
 </head>
 <body>
@@ -332,11 +359,35 @@
 </div>
 <!--Πληροφορίες -->
 <!--butov piso sto player -->
-<a href="anigiautomata/automatoplayer.html" 
-   class="back-button" 
-   target="_parent">
+<button type="button" id="player-btn" class="back-button-player" onclick="goToPlayerNow()">
    Πίσω στο player
-</a>
+</button>
+
+<script>
+    function goToPlayerNow() {
+        var btn = document.getElementById('player-btn');
+        var frame = document.getElementById('player-frame');
+        var wrapper = document.getElementById('page-wrapper') || document.body;
+
+        if (btn) btn.style.display = 'none';
+        document.body.classList.add('no-scroll');
+        wrapper.classList.add('master-zoom-out');
+
+        setTimeout(function() {
+            if (frame) {
+                frame.src = "anigiautomata/automatoplayer.html";
+                frame.style.display = 'block';
+                frame.classList.add('player-entrance');
+                
+                if (document.getElementById('page-wrapper')) {
+                    document.getElementById('page-wrapper').style.display = 'none';
+                }
+            } else {
+                window.location.href = "anigiautomata/automatoplayer.html";
+            }
+        }, 800);
+    }
+</script>
 <!--butov piso sto player -->
 <script src="lock.js"></script>
 </body>
