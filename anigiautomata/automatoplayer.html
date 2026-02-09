@@ -157,26 +157,24 @@ body {
 
 </style>
 <!--butov piso sto player -->	
-<style>
-        .back-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            background-color: rgba(255, 51, 0,0.3); /* Μπλε χρώμα */
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-family: Arial, sans-serif;
-            font-weight: bold;
-            z-index: 1000; /* Για να είναι πάνω από όλα τα στοιχεία */
-            box-shadow: 0 2px 5px rgba(255, 255, 0,0.9);
-        }
-
-        .back-button:hover {
-            background-color: #00cc00; /* Σκούρο μπλε στο πέρασμα του ποντικιού */
-        }
-    </style>
+    <style>
+    .back-button-fixed {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        background-color: rgba(255, 51, 0, 0.3);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        z-index: 9999;
+        box-shadow: 0 2px 5px rgba(255, 255, 0, 0.9);
+        cursor: pointer;
+    }
+    .back-button-fixed:hover { background-color: #00cc00; }
+</style>
 	<!--butov piso sto player -->
 
 </head>
@@ -233,11 +231,32 @@ body {
 
 <script src="lock.js"></script>
   <!--butov piso sto player -->
-<a href="../index.html" 
-   class="back-button" 
-   target="_parent">
-   Αρχική σελίδα
-</a>
+<button type="button" class="back-button-fixed" onclick="goToHomeNow()">
+    Αρχική σελίδα
+</button>
+
+<script>
+    function goToHomeNow() {
+        const wrap = document.getElementById('page-wrapper');
+        const iframe = document.getElementById('player-frame');
+        const player = document.getElementById('main-player');
+
+        if (player) player.src = "";
+        
+        // Φορτώνει την Αρχική στο iframe
+        if (iframe) {
+            iframe.src = "../index.html";
+            
+            if (wrap) {
+                wrap.classList.add('master-zoom');
+                setTimeout(() => {
+                    wrap.style.display = 'none';
+                    iframe.classList.add('player-entrance');
+                }, 1000);
+            }
+        }
+    }
+</script>
 <!--butov piso sto player -->
 </body>
 </html>
