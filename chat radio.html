@@ -246,13 +246,13 @@
     </div>
 </div>
 
-    <footer class="site-footer">
-        <p>
-            <span>© 2025 Radio Synnefa. Όλα τα δικαιώματα διατηρούνται. </span>
-            | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
-        </p>
-        <p>Design και ανάπτυξη: <span>Radio Synnefa</span></p>
-    </footer>
+    <<footer class="site-footer">
+  <p>
+    <span>© <span id="current-year"></span> Ράδιο Σύννεφα - Radio Synnefa. Όλα τα δικαιώματα διατηρούνται. </span>
+    | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+  </p>
+  <p>Design και ανάπτυξη: <span>Ράδιο Σύννεφα - Radio Synnefa</span></p>
+</footer>
 </div> 
 
 <div class="clock" id="clock">
@@ -434,7 +434,8 @@
 </script>
 <!--   klidoma apo forma  -->
 
-
+// Αυτό βρίσκει το τρέχον έτος και το βάζει αυτόματα στο id "current-year"
+<script>document.getElementById('current-year').textContent = new Date().getFullYear();</script>
 <script src="lock.js"></script>
  </body>
 </html>
