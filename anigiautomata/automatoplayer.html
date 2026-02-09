@@ -231,7 +231,7 @@ body {
 
 <script src="lock.js"></script>
   <!--butov piso sto player -->
-<button type="button" class="back-button-fixed" onclick="goToHomeNow()">
+<button type="button" id="home-btn" class="back-button-fixed" onclick="goToHomeNow()">
     Αρχική σελίδα
 </button>
 
@@ -240,10 +240,13 @@ body {
         const wrap = document.getElementById('page-wrapper');
         const iframe = document.getElementById('player-frame');
         const player = document.getElementById('main-player');
+        const btn = document.getElementById('home-btn'); // Το κουμπί
 
         if (player) player.src = "";
         
-        // Φορτώνει την Αρχική στο iframe
+        // 1. Εξαφανίζουμε αμέσως το κουμπί
+        if (btn) btn.style.display = 'none';
+
         if (iframe) {
             iframe.src = "../index.html";
             
