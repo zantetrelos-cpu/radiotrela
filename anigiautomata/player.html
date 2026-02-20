@@ -132,7 +132,7 @@
 <script>                        
 const STREAMS = {
   live: { name: "ΚΥΡΙΟΣ ΣΕΡΒΕΡ", streamUrl: "https://freestream.hu:8340/trela233", statusUrl: "https://freestream.hu:8340/status-json.xsl?mount=/trela233" },
-  backup: { name: "BACKUP ΣΕΡΒΕΡ", streamUrl: "https://stream.zeno.fm/x8gduy6xd48uv", zenoStationId: "x8gduy6xd48uv", zenoMetaUrl: (id) => `https://api.zeno.fm/mounts/metadata/subscribe/${id}` }
+  backup: { name: "BACKUP ΣΕΡΒΕΡ", streamUrl: "https://radio.nitro-server.uk/listen/radiosinefa/radio.mp3", statusUrl: "https://radio.nitro-server.uk/api/nowplaying/radiosinefa" }
 };
 
 // MP3 ΠΟΥ ΖΗΤΗΣΑΤΕ
@@ -140,7 +140,7 @@ const INTRO_MP3_URL = "https://zantetrelos-cpu.github.io/radiotrela/%CE%A1%CE%AC
 const originalRadioName = "Radio Synnefa LIVE";
 
 let audio = new Audio(); audio.crossOrigin = "anonymous";
-let introAudio = new Audio(INTRO_MP3_URL); // Ξεχωριστό audio object για να μην επηρεάζει το ράδιο
+let introAudio = new Audio(INTRO_MP3_URL); 
 
 let audioCtx, analyser, dataArray, bufferLength, sourceNode;
 let isPlaying = false, isLive = true, retryIntervalMs = 60000;
@@ -158,7 +158,6 @@ const effectBtn = document.getElementById('effectBtn');
 const loadingModal = document.getElementById('loadingModal');
 const modalText = document.getElementById('modalText');
 
-// Στοιχεία Intro
 const introOverlay = document.getElementById('introOverlay');
 const closeIntroBtn = document.getElementById('closeIntroBtn');
 
@@ -232,7 +231,7 @@ effectBtn.addEventListener('click', () => {
 
 volumeSlider.addEventListener('input', () => {
   audio.volume = volumeSlider.value / 100;
-  introAudio.volume = volumeSlider.value / 100; // Ρυθμίζει και το intro
+  introAudio.volume = volumeSlider.value / 100; 
   volumeValue.textContent = `${volumeSlider.value}%`;
 });
 
@@ -244,65 +243,32 @@ function decodeGreek(str){
   } catch(e){ return str; }
 }
 
-async function fetchLiveTitle(){
-  try{
-    const r = await fetch(STREAMS.live.statusUrl + "&t=" + Date.now());
-    if(!r.ok) throw new Error('bad');
+async function fetchTitle() {
+  const url = isLive ? STREAMS.live.statusUrl : STREAMS.backup.statusUrl;
+  try {
+    const r = await fetch(url + (url.includes('?') ? '&' : '?') + "t=" + Date.now());
     const data = await r.json();
     let title = "";
-    if(data.icestats && data.icestats.source){
-      const src = Array.isArray(data.icestats.source) ? data.icestats.source.find(s => s.listenurl && s.listenurl.includes("/trela233")) : data.icestats.source;
-      title = src && src.title ? src.title : "";
+    
+    if (isLive) {
+      if(data.icestats && data.icestats.source){
+        const src = Array.isArray(data.icestats.source) ? data.icestats.source.find(s => s.listenurl && s.listenurl.includes("/trela233")) : data.icestats.source;
+        title = src && src.title ? src.title : "";
+      }
+      if(title) title = decodeGreek(title);
+    } else {
+      // Νέο Backup API (Nitro-server)
+      title = data.now_playing.song.text;
     }
-    title = (title||"").trim();
-    if(title) title = decodeGreek(title);
-    return title || originalRadioName;
-  } catch(e){ return originalRadioName; }
-}
-
-let zenoEventSource = null;
-let zenoPollInterval = null;
-function startZenoSSE(){
-  stopZeno();
-  const url = STREAMS.backup.zenoMetaUrl(STREAMS.backup.zenoStationId);
-  try {
-    zenoEventSource = new EventSource(url);
-    zenoEventSource.onmessage = (ev) => {
-      try {
-        const d = JSON.parse(ev.data);
-        const title = (d && d.streamTitle) ? String(d.streamTitle).trim() : "";
-        nowPlayingEl.textContent = title && title.length ? title : originalRadioName;
-      } catch(e){}
-    };
-    zenoEventSource.onerror = () => { stopZeno(); startZenoPolling(); };
-  } catch(e){ startZenoPolling(); }
-}
-function startZenoPolling(){
-  stopZeno();
-  const fetchOnce = async () => {
-    try{
-      const r = await fetch(STREAMS.backup.zenoMetaUrl(STREAMS.backup.zenoStationId) + "?t=" + Date.now());
-      const data = await r.json();
-      const title = data && data.streamTitle ? String(data.streamTitle).trim() : "";
-      nowPlayingEl.textContent = title && title.length ? title : originalRadioName;
-    } catch(e){ nowPlayingEl.textContent = originalRadioName; }
-  };
-  fetchOnce();
-  zenoPollInterval = setInterval(fetchOnce, 10000);
-}
-function stopZeno(){
-  if(zenoEventSource){ try{ zenoEventSource.close(); }catch(e){} zenoEventSource = null; }
-  if(zenoPollInterval){ clearInterval(zenoPollInterval); zenoPollInterval = null; }
-}
-
-async function updateNowPlayingImmediate(){
-  if(isLive){ nowPlayingEl.textContent = await fetchLiveTitle(); stopZeno(); }
-  else { startZenoSSE(); }
+    
+    nowPlayingEl.textContent = (title && title.trim()) || originalRadioName;
+  } catch(e) { 
+    nowPlayingEl.textContent = originalRadioName; 
+  }
 }
 
 async function playStream(url, live=true){
   audio.pause(); audio.src = ""; isLive = live;
-  
   modalText.textContent = live ? "Φόρτωση live streaming" : "παρακαλώ περιμένετε φόρτωση servers";
   loadingModal.style.display = "flex";
 
@@ -313,7 +279,7 @@ async function playStream(url, live=true){
     loadingModal.style.display = "none";
     statusEl.textContent = live ? "ON AIR Radio Synnefa" : " ON AIR (Fallback)";
     statusEl.className = live ? "onair" : "offair";
-    updateNowPlayingImmediate();
+    fetchTitle();
   } catch(e){
     if(live) playStream(STREAMS.backup.streamUrl, false);
     else { 
@@ -349,9 +315,9 @@ requestAnimationFrame(rotateButton);
 
 btn.addEventListener('click', () => {
   if(isPlaying){
-    audio.pause(); introAudio.pause(); // Κλείνουν και τα δύο αν πατηθεί παύση
+    audio.pause(); introAudio.pause();
     btn.textContent = "Play"; statusEl.textContent = "Παύση"; statusEl.className = "offair"; 
-    isPlaying = false; stopZeno();
+    isPlaying = false;
     loadingModal.style.display = "none";
     introOverlay.style.display = "none";
   } else {
@@ -362,16 +328,11 @@ btn.addEventListener('click', () => {
 audio.addEventListener('error', () => { if(isLive) playStream(STREAMS.backup.streamUrl, false); });
 audio.addEventListener('ended', () => { if(isLive) playStream(STREAMS.backup.streamUrl, false); });
 
-setInterval(() => { if(isLive && isPlaying) fetchLiveTitle().then(t => { if(isLive) nowPlayingEl.textContent = t; }); }, 15000);
+setInterval(() => { if(isPlaying) fetchTitle(); }, 15000);
 
-// --- ΛΕΙΤΟΥΡΓΙΑ INTRO (Η ΠΡΟΣΘΗΚΗ ΣΟΥ) ---
 function runIntroSequence() {
     introOverlay.style.display = "flex";
-    introAudio.play().catch(() => {
-        // Αν ο browser μπλοκάρει το αυτόματο play, απλά κλείνουμε το intro
-        finishIntro();
-    });
-
+    introAudio.play().catch(() => { finishIntro(); });
     introAudio.onended = finishIntro;
     closeIntroBtn.onclick = finishIntro;
 }
@@ -379,15 +340,12 @@ function runIntroSequence() {
 function finishIntro() {
     introAudio.pause();
     introOverlay.style.display = "none";
-    // Προσομοίωση κλικ στο Play για να ξεκινήσει ο αρχικός σου κώδικας χωρίς αλλαγές
     if(!isPlaying) btn.click();
 }
 
 window.addEventListener('load', () => {
-    // Εκκίνηση intro μετά από μισό δευτερόλεπτο
     setTimeout(runIntroSequence, 500);
 });
-// ----------------------------------------
 
 let _breathRunning = false;
 function computeLevelFromFrequencyData() {
