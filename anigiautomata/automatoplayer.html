@@ -157,7 +157,28 @@ body {
 
 </style>
 
+<!--   Φόρμα Επικοινωνίας  -->
+<style>
+  /* Το εφέ της αναπνοής */
+  @keyframes breathe {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 255, 0.7); }
+    50% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(255, 0, 255, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 255, 0); }
+  }
 
+  #openFormBtn {
+    animation: breathe 3s infinite ease-in-out;
+    transition: all 0.3s ease;
+    outline: none;
+  }
+
+  #openFormBtn:hover {
+    animation: none; /* Σταματάει η αναπνοή όταν πας το ποντίκι πάνω */
+    background: rgba(255, 0, 255, 0.5) !important;
+    transform: scale(1.1);
+  }
+</style>
+<!--   Φόρμα Επικοινωνίας  -->
 
 </head>
 <body>
@@ -204,20 +225,18 @@ body {
         </div>
     </div>
 	
-	<center><button id="openFormBtn" style="background: rgba(255, 0, 255,0.25); color: white; padding: 15px 25px; border: none; cursor: pointer; border-radius: 10px; font-size: 18px; font-weight: bold;">
+	<!--   Φόρμα Επικοινωνίας  -->
+<center>
+  <button id="openFormBtn" style="background: rgba(255, 0, 255,0.4); color: white; padding: 15px 30px; border: 2px solid rgba(255, 255, 255, 0.3); cursor: pointer; border-radius: 10px; font-size: 18px; font-weight: bold; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
     Φόρμα Επικοινωνίας
-</button></center>
+  </button>
+</center>
 
 <div id="formModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); overflow: auto;">
-  
   <div style="position: relative; margin: 5% auto; padding: 0; width: 90%; max-width: 450px;">
-    
     <span id="closeFormBtn" style="position: absolute; right: 15px; top: 10px; color: #fff; font-size: 35px; font-weight: bold; cursor: pointer; z-index: 10001;">&times;</span>
-
     <div id="form-container" style="max-width: 400px; font-family: 'Segoe UI', Arial, sans-serif; background-color: rgba(255, 0, 255,0.25); padding: 30px; border: 2px solid #1976d2; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.15);">
-      
       <h3 style="text-align: center; color: #ffffff; margin-top: 0; margin-bottom: 25px; font-size: 22px;">Στείλτε μας Μήνυμα</h3>
-
       <form id="contact-form">
           <div style="margin-bottom: 15px;">
               <input type="text" id="name" name="name" placeholder="Ονοματεπώνυμο" required style="width:100%; padding: 12px 15px; border: 2px solid #ff3300; border-radius: 10px; box-sizing: border-box; outline: none; font-size: 15px;">
@@ -229,10 +248,9 @@ body {
               <textarea id="message" name="message" placeholder="Πώς μπορούμε να βοηθήσουμε;" required style="width:100%; height:130px; padding: 12px 15px; border: 2px solid #ff3300; border-radius: 10px; box-sizing: border-box; outline: none; font-size: 15px; resize: none;"></textarea>
           </div>
           <button type="submit" id="submit-btn" style="width: 100%; background: #1976d2; color: white; padding: 14px; border: none; cursor: pointer; border-radius: 10px; font-size: 17px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; transition: background 0.3s ease;">
-             Αποστολή Τώρα
+              Αποστολή Τώρα
           </button>
       </form>
-      
       <div id="status-msg" style="display:none; color: #1b5e20; background-color: #c8e6c9; border: 1px solid #a5d6a7; font-weight: bold; margin-top: 20px; padding: 15px; border-radius: 10px; text-align: center;">
           ✅ Το μήνυμα στάλθηκε με επιτυχία!
       </div>
@@ -241,33 +259,24 @@ body {
 </div>
 
 <script>
-  // Script για το Άνοιγμα/Κλείσιμο του Παραθύρου
   const modal = document.getElementById("formModal");
   const btn = document.getElementById("openFormBtn");
   const span = document.getElementById("closeFormBtn");
-
   btn.onclick = function() { modal.style.display = "block"; }
   span.onclick = function() { modal.style.display = "none"; }
-  
-  // Κλείσιμο αν πατήσει έξω από το παράθυρο
   window.onclick = function(event) {
     if (event.target == modal) { modal.style.display = "none"; }
   }
-
-  // Script για την Αποστολή της Φόρμας
   const contactForm = document.getElementById('contact-form');
   const statusMsg = document.getElementById('status-msg');
   const submitBtn = document.getElementById('submit-btn');
-
   contactForm.addEventListener("submit", function(e) {
     e.preventDefault();
     submitBtn.innerText = "ΑΠΟΣΤΟΛΗ...";
     submitBtn.disabled = true;
     submitBtn.style.backgroundColor = "#546e7a";
-
     const data = new FormData(contactForm);
-    
-    fetch("https://formsubmit.co/ajax/radiochta@gmail.com", {
+    fetch("https://formsubmit.co/ajax/zantetrelos@gmail.com", {
       method: "POST",
       body: data
     })
@@ -278,10 +287,9 @@ body {
         submitBtn.innerText = "ΑΠΟΣΤΟΛΗ ΤΩΡΑ";
         submitBtn.disabled = false;
         submitBtn.style.backgroundColor = "#1976d2";
-        
         setTimeout(() => {
           statusMsg.style.display = 'none';
-          modal.style.display = "none"; // Κλείνει το παράθυρο αυτόματα μετά την επιτυχία
+          modal.style.display = "none";
         }, 3000);
       } else {
         alert("Κάτι πήγε στραβά.");
@@ -296,6 +304,7 @@ body {
     });
   });
 </script>
+<!--   Φόρμα Επικοινωνίας  -->           
             
     <footer class="site-footer">
   <p>
