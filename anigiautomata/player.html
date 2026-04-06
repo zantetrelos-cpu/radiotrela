@@ -134,7 +134,7 @@
 <script>                        
 const STREAMS = {
   live: { name: "ΚΥΡΙΟΣ ΣΕΡΒΕΡ", streamUrl: "https://freestream.hu:8340/trela233", statusUrl: "https://freestream.hu:8340/status-json.xsl?mount=/trela233" },
-  backup: { name: "BACKUP ΣΕΡΒΕΡ", streamUrl: "https://radio.nitro-server.uk/listen/radiosinefa/radio.mp3", statusUrl: "https://radio.nitro-server.uk/api/nowplaying/radiosinefa" }
+  backup: { name: "BACKUP ΣΕΡΒΕΡ", streamUrl: "https://stream.zeno.fm/x8gduy6xd48uv", zenoStationId: "x8gduy6xd48uv", zenoMetaUrl: (id) => `https://api.zeno.fm/mounts/metadata/subscribe/${id}` }
 };
 
 const INTRO_URL = "https://zantetrelos-cpu.github.io/radiotrela/%CE%A1%CE%AC%CE%B4%CE%B9%CE%BF%20%CE%A3%CF%8D%CE%BD%CE%BD%CE%B5%CF%86%CE%B1.mp3";
@@ -157,6 +157,9 @@ const volumeValue = document.getElementById('volumeValue');
 const effectBtn = document.getElementById('effectBtn');
 const loadingModal = document.getElementById('loadingModal');
 const modalText = document.getElementById('modalText');
+
+let zenoEventSource = null;
+let zenoPollInterval = null;
 
 function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 window.addEventListener('resize', resizeCanvas);
@@ -211,7 +214,6 @@ const effects = [
     ctx.shadowBlur = 0;
   },
   (ctx, data, w, h) => {
-    // Τρίτο εφέ: ΚΕΝΟ
     ctx.clearRect(0,0,w,h);
   }
 ];
@@ -245,24 +247,62 @@ function decodeGreek(str){
   } catch(e){ return str; }
 }
 
+// --- ΝΕΑ ΛΟΓΙΚΗ ΓΙΑ ΤΟΥΣ ΤΙΤΛΟΥΣ (MAIN & BACKUP) ---
 async function fetchTitle() {
   if(isIntroActive) return; 
-  const url = isLive ? STREAMS.live.statusUrl : STREAMS.backup.statusUrl;
-  try {
-    const r = await fetch(url + (url.includes('?') ? '&' : '?') + "t=" + Date.now());
-    const data = await r.json();
-    let title = "";
-    if (isLive) {
+  
+  if (isLive) {
+    const url = STREAMS.live.statusUrl;
+    try {
+      const r = await fetch(url + (url.includes('?') ? '&' : '?') + "t=" + Date.now());
+      const data = await r.json();
+      let title = "";
       if(data.icestats && data.icestats.source){
         const src = Array.isArray(data.icestats.source) ? data.icestats.source.find(s => s.listenurl && s.listenurl.includes("/trela233")) : data.icestats.source;
         title = src && src.title ? src.title : "";
       }
       if(title) title = decodeGreek(title);
-    } else {
-      title = data.now_playing.song.text;
-    }
-    nowPlayingEl.textContent = (title && title.trim()) || originalRadioName;
-  } catch(e) { nowPlayingEl.textContent = originalRadioName; }
+      nowPlayingEl.textContent = (title && title.trim()) || originalRadioName;
+    } catch(e) { nowPlayingEl.textContent = originalRadioName; }
+  } else {
+    // Αν είμαστε σε Backup (Zeno), η ενημέρωση γίνεται μέσω SSE/Polling αυτόματα
+    if (!zenoEventSource && !zenoPollInterval) startZenoSSE();
+  }
+}
+
+function startZenoSSE(){
+  stopZeno();
+  const url = STREAMS.backup.zenoMetaUrl(STREAMS.backup.zenoStationId);
+  try {
+    zenoEventSource = new EventSource(url);
+    zenoEventSource.onmessage = (ev) => {
+      try {
+        const d = JSON.parse(ev.data);
+        const title = (d && d.streamTitle) ? String(d.streamTitle).trim() : "";
+        nowPlayingEl.textContent = title && title.length ? title : originalRadioName;
+      } catch(e){}
+    };
+    zenoEventSource.onerror = () => { stopZeno(); startZenoPolling(); };
+  } catch(e){ startZenoPolling(); }
+}
+
+function startZenoPolling(){
+  stopZeno();
+  const fetchOnce = async () => {
+    try{
+      const r = await fetch(STREAMS.backup.zenoMetaUrl(STREAMS.backup.zenoStationId) + "?t=" + Date.now());
+      const data = await r.json();
+      const title = data && data.streamTitle ? String(data.streamTitle).trim() : "";
+      nowPlayingEl.textContent = title && title.length ? title : originalRadioName;
+    } catch(e){ nowPlayingEl.textContent = originalRadioName; }
+  };
+  fetchOnce();
+  zenoPollInterval = setInterval(fetchOnce, 10000);
+}
+
+function stopZeno(){
+  if(zenoEventSource){ try{ zenoEventSource.close(); }catch(e){} zenoEventSource = null; }
+  if(zenoPollInterval){ clearInterval(zenoPollInterval); zenoPollInterval = null; }
 }
 
 function startAutoRetry(){
@@ -283,6 +323,14 @@ async function playStream(url, live=true){
   isIntroActive = false;
   skipBtn.style.display = "none";
   audio.pause(); audio.src = ""; isLive = live;
+  
+  if (!live) {
+      stopZeno();
+      startZenoSSE();
+  } else {
+      stopZeno();
+  }
+
   modalText.textContent = live ? "Φόρτωση live streaming" : "παρακαλώ περιμένετε φόρτωση servers";
   loadingModal.style.display = "flex";
   statusEl.textContent = live ? "Φόρτωση Live Streaming" : "Φόρτωση, παρακαλώ περιμένετε";
@@ -337,6 +385,7 @@ btn.addEventListener('click', () => {
     isPlaying = false;
     skipBtn.style.display = "none";
     loadingModal.style.display = "none";
+    stopZeno();
   } else {
     if(!hasIntroPlayed) {
         startIntro();
@@ -361,7 +410,7 @@ audio.addEventListener('ended', () => {
     else if(isLive) playStream(STREAMS.backup.streamUrl, false); 
 });
 
-setInterval(() => { if(isPlaying && !isIntroActive) fetchTitle(); }, 15000);
+setInterval(() => { if(isPlaying && !isIntroActive && isLive) fetchTitle(); }, 15000);
 
 let _breathRunning = false;
 let lastLevel = 0;
