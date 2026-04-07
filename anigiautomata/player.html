@@ -7,9 +7,7 @@
 <title>Ράδιο Σύννεφα - Radio Synnefa | Το πιο ερωτικό ραδιόφωνο</title>
 
 <meta name="description" content="Ράδιο Σύννεφα - Radio Synnefa. Εδώ παίζουμε μόνο ερωτικά τραγούδια. Το πιο ερωτικό ραδιόφωνο στο διαδίκτυο.">
-
 <meta name="keywords" content="ράδιο σύννεφα, radio synnefa, radio live, radio internet, web radio, chat radio, ερωτικά τραγούδια">
-
 <meta name="author" content="Radio Synnefa">
 
 <meta property="og:title" content="Ράδιο Σύννεφα - Radio Synnefa">
@@ -18,6 +16,8 @@
 <meta property="og:url" content="https://zantetrelos-cpu.github.io/radiotrela/">
 
 <link rel="shortcut icon" href="zante.ico">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+
 <style>
   body{margin:0;font-family:Segoe UI,Arial,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;overflow:hidden;background:100% 100%}
  
@@ -71,7 +71,7 @@
     box-shadow: 0 0 15px #00ffcc; display: flex; align-items: center; justify-content: center;
   }
 
-#skipIntroBtn {
+  #skipIntroBtn {
     display: none;
     position: absolute; bottom: 20px; right: 20px;
     width: 130px; height: 40px; border-radius: 8px;
@@ -90,26 +90,50 @@
  
   #equalizer{position:absolute;bottom:0;width:100%;height:100vh;z-index:1}
  
-  /* --- ΕΝΗΜΕΡΩΜΕΝΟ ΣΤΥΛ ΤΙΤΛΟΥ (ΧΩΡΙΣ text-transform) --- */
+  /* --- Η ΔΙΟΡΘΩΣΗ ΠΟΥ ΖΗΤΗΣΕΣ --- */
   #nowPlaying {
     position: absolute;
-    top: 380px;
-    font-size: 26px;
-    color: #fff;
-    text-align: center;
+    top: 390px;
+    width: 90%; /* Λίγο μεγαλύτερο για καλύτερο οπτικό πεδίο */
+    height: 50px;
     z-index: 4;
-    width: 90%;
+    overflow: hidden; /* Κρύβει το κείμενο όταν βγαίνει από τα όρια */
+    white-space: nowrap;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 29px;
     font-weight: bold;
-    letter-spacing: 1px;
-    text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc;
-    animation: glowText 2s ease-in-out infinite alternate;
+    color: #fff;
+    text-shadow: 0 0 10px #ff0000;
+    display: flex;
+    align-items: center;
+    /* Μάσκα για ομαλό σβήσιμο στις άκρες */
+    -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0) 100%);
+    mask-image: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0) 100%);
   }
 
-  @keyframes glowText {
-    from { text-shadow: 0 0 10px #fff, 0 0 20px #00ffcc; transform: scale(1); }
-    to { text-shadow: 0 0 20px #fff, 0 0 40px #00ffcc; transform: scale(1.03); }
+  .scroll-text {
+    display: inline-block;
+    padding-left: 100%; /* Σπρώχνει το κείμενο να ξεκινήσει ΕΞΩ από το div, στα δεξιά */
+    animation: marquee 15s linear infinite; /* 15 δευτερόλεπτα για ομαλή ταχύτητα */
   }
-  /* ------------------------------------------------------ */
+
+  @keyframes marquee {
+    0% { transform: translate3d(0, 0, 0); } /* Ξεκινά από την αρχή του padding (δεξιά) */
+    100% { transform: translate3d(-100%, 0, 0); } /* Τερματίζει όταν όλο το κείμενο βγει αριστερά */
+  }
+
+  .static-text {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    animation: floatTitle 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes floatTitle {
+    from { transform: translateY(0px); opacity: 0.9; }
+    to { transform: translateY(-5px); opacity: 1; }
+  }
+  /* ---------------------- */
 
   #volumeControl {
     position: absolute;top: 330px;left: 50%;transform: translateX(-50%);
@@ -141,7 +165,7 @@
 <div id="skipIntroBtn">Παράλειψη Intro</div>
 
 <div id="status" class="offair">Πάτησε Play</div>
-<div id="nowPlaying">Radio Synnefa Live</div>
+<div id="nowPlaying"><span class="static-text">Radio Synnefa Live</span></div>
 
 <div id="volumeControl">
   <input type="range" id="volumeSlider" min="0" max="100" value="100">
@@ -351,6 +375,17 @@ function decodeGreek(str){
   } catch(e){ return str; }
 }
 
+// ΚΑΘΑΡΗ ΕΜΦΑΝΙΣΗ ΧΩΡΙΣ ΔΙΠΛΟΤΥΠΑ
+function updateUIWithTitle(titleText) {
+  let finalTitle = titleText || originalRadioName;
+  if (finalTitle.length > 20) {
+    // Μόνο μια φορά το κείμενο, το CSS αναλαμβάνει την κίνηση από δεξιά
+    nowPlayingEl.innerHTML = `<span class="scroll-text">${finalTitle}</span>`;
+  } else {
+    nowPlayingEl.innerHTML = `<span class="static-text">${finalTitle}</span>`;
+  }
+}
+
 async function fetchTitle() {
   if(isIntroActive) return; 
   
@@ -365,8 +400,8 @@ async function fetchTitle() {
         title = src && src.title ? src.title : "";
       }
       if(title) title = decodeGreek(title);
-      nowPlayingEl.textContent = (title && title.trim()) || originalRadioName;
-    } catch(e) { nowPlayingEl.textContent = originalRadioName; }
+      updateUIWithTitle(title);
+    } catch(e) { updateUIWithTitle(originalRadioName); }
   } else {
     if (!zenoEventSource && !zenoPollInterval) startZenoSSE();
   }
@@ -381,7 +416,7 @@ function startZenoSSE(){
       try {
         const d = JSON.parse(ev.data);
         const title = (d && d.streamTitle) ? String(d.streamTitle).trim() : "";
-        nowPlayingEl.textContent = title && title.length ? title : originalRadioName;
+        updateUIWithTitle(title);
       } catch(e){}
     };
     zenoEventSource.onerror = () => { stopZeno(); startZenoPolling(); };
@@ -395,8 +430,8 @@ function startZenoPolling(){
       const r = await fetch(STREAMS.backup.zenoMetaUrl(STREAMS.backup.zenoStationId) + "?t=" + Date.now());
       const data = await r.json();
       const title = data && data.streamTitle ? String(data.streamTitle).trim() : "";
-      nowPlayingEl.textContent = title && title.length ? title : originalRadioName;
-    } catch(e){ nowPlayingEl.textContent = originalRadioName; }
+      updateUIWithTitle(title);
+    } catch(e){ updateUIWithTitle(originalRadioName); }
   };
   fetchOnce();
   zenoPollInterval = setInterval(fetchOnce, 10000);
@@ -460,7 +495,7 @@ async function startIntro() {
     audio.src = INTRO_URL;
     statusEl.textContent = "Παίζει Intro...";
     statusEl.className = "loading";
-    nowPlayingEl.textContent = "Καλώς ήρθατε στο Ράδιο Σύννεφα";
+    updateUIWithTitle("Καλώς ήρθατε στο Ράδιο Σύννεφα");
     skipBtn.style.display = "flex";
     try {
         await audio.play();
