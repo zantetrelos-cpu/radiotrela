@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Radio Chat Live - Είσοδος / Εγγραφή</title>
     <style>
-      body { 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    height: 100vh; 
-    margin: 0;
-    color: white;
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-    background-image: url('fon.png');
-    background-repeat: no-repeat;
-    background-attachment: fixed; 
-    background-size: 100% 100%;
-    background-color: rgba(0, 0, 0, 0.7); background-blend-mode: multiply;
-}
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0;
+            color: white;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background-image: url('fon.png');
+            background-repeat: no-repeat;
+            background-attachment: fixed; 
+            background-size: 100% 100%;
+            background-color: rgba(0, 0, 0, 0.7); background-blend-mode: multiply;
+        }
         
         .card { 
             background: rgba(30, 30, 30, 0.6); 
@@ -77,6 +77,24 @@
             margin-top: 15px;
         }
 
+        /* Νέο στυλ για το κουμπί "Πίσω στο player" ΜΕΣΑ στη φόρμα */
+        .inner-player-btn {
+            background: rgba(255, 51, 0, 0.2);
+            color: #ffcccc;
+            border: 1px solid rgba(255, 51, 0, 0.4);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-top: 20px; /* Απόσταση από το "Έχεις λογαριασμό;" */
+            width: auto; /* Δεν πιάνει όλο το πλάτος */
+            display: inline-block;
+        }
+        .inner-player-btn:hover {
+            background: rgba(255, 51, 0, 0.5);
+            color: white;
+            transform: translateY(-1px);
+        }
+
         #msg { margin-top: 20px; font-size: 14px; min-height: 20px; font-weight: 500; }
 
         .link-text { margin-top: 25px; font-size: 14px; color: #aaa; }
@@ -86,154 +104,120 @@
         .fade-in { animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
-	<!--Πληροφορίες -->
-	<style>
-    /* Styling για το μπουτόν */
-    .info-btn {
-        background: #ff3300;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-        margin-top: 15px;
-        transition: background 0.3s; /* Για να αλλάζει ομαλά */
-    }
-
-    /* ΑΥΤΟ ΠΡΟΣΤΕΘΗΚΕ: Αλλαγή χρώματος στο hover */
-    .info-btn:hover {
-        background: #0066ff; 
-    }
-
-    /* Το φόντο του modal (κλείνει όλη την οθόνη) */
-    .modal-overlay {
-        display: none; /* Κρυφό αρχικά */
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.7);
-        backdrop-filter: blur(5px);
-    }
-
-    /* Το πλαίσιο του περιεχομένου */
-   .modal-content {
-        background: #2a2a2a;
-        margin: 5% auto; 
-        padding: 30px;
-        border: 2px solid #ff3300;
-        width: 80%;
-        max-width: 600px;
-        border-radius: 15px;
-        text-align: center;
-        position: relative;
-        color: white; 
-        box-shadow: 0 5px 60px rgba(0, 102, 255,0.5);
-    }
-
-    .modal-content h3 {
-        color: #007bff; /* Μπλε χρώμα στον τίτλο */
-    }
-
-    .modal-content p {
-        color: #cccccc; /* Ανοιχτό γκρι στο κείμενο */
-    }
-
-    /* Το κουμπί κλεισίματος (X) */
-    .close-modal {
-        position: absolute;
-        right: 15px;
-        top: 10px;
-        color: #aaa;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .close-modal:hover { color: white; }
-</style>
-
-<script>
-    function openModal() {
-        document.getElementById("infoModal").style.display = "block";
-    }
-
-    function closeModal(event) {
-        // Κλείνει αν πατήσεις το X ή έξω από το παράθυρο
-        if (event.target.id === "infoModal" || event.target.className === "close-modal") {
-            document.getElementById("infoModal").style.display = "none";
+    <style>
+        .info-btn {
+            background: #ff3300;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            transition: background 0.3s;
         }
-    }
-</script>
-	<!--Πληροφορίες -->
-<!--butov piso sto player -->	
-<style>
-    /* Εφέ Εισόδου: Έρχεται με Zoom και μετά "κάθεται" στη θέση του */
-    .player-entrance {
-        animation: fullZoomTransition 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-    }
 
-    @keyframes fullZoomTransition {
-        0% {
-            transform: scale(0);
-            opacity: 0;
+        .info-btn:hover {
+            background: #0066ff; 
         }
-        50% {
-            transform: scale(1.1); /* Μεγαλώνει λίγο παραπάνω για εφέ */
-            opacity: 1;
-        }
-        100% {
-            transform: scale(1); /* Έρχεται στο κανονικό */
-            opacity: 1;
-        }
-    }
 
-    /* Τα υπόλοιπα στυλ παραμένουν ως έχουν */
-    body.no-scroll { overflow: hidden; }
-    .back-button-player {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        width: auto !important;
-        display: inline-block !important;
-        padding: 10px 20px;
-        background-color: rgba(255, 51, 0, 0.3); 
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-family: Arial, sans-serif;
-        font-weight: bold;
-        z-index: 9999;
-        box-shadow: 0 2px 5px rgba(255, 255, 0, 0.9);
-        cursor: pointer;
-    }
-    .back-button-player:hover { background-color: #00cc00; }
-    .master-zoom-out {
-        transform: scale(3) !important;
-        opacity: 0 !important;
-        transition: all 0.8s ease-in-out !important;
-    }
-</style>
-	<!--butov piso sto player -->
+        .modal-overlay {
+            display: none; 
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: #2a2a2a;
+            margin: 5% auto; 
+            padding: 30px;
+            border: 2px solid #ff3300;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+            color: white; 
+            box-shadow: 0 5px 60px rgba(0, 102, 255,0.5);
+        }
+
+        .modal-content h3 {
+            color: #007bff;
+        }
+
+        .modal-content p {
+            color: #cccccc;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-modal:hover { color: white; }
+    </style>
+    <script>
+        function openModal() {
+            document.getElementById("infoModal").style.display = "block";
+        }
+
+        function closeModal(event) {
+            if (event.target.id === "infoModal" || event.target.className === "close-modal") {
+                document.getElementById("infoModal").style.display = "none";
+            }
+        }
+    </script>
+    <style>
+        /* Εφέ Εισόδου Player */
+        .player-entrance {
+            animation: fullZoomTransition 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes fullZoomTransition {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        body.no-scroll { overflow: hidden; }
+
+        .master-zoom-out {
+            transform: scale(3) !important;
+            opacity: 0 !important;
+            transition: all 0.8s ease-in-out !important;
+        }
+    </style>
 </head>
 <body>
 
     <div class="card">
         <div id="signup-box" class="fade-in">
-		
-		      <!--Πληροφορίες -->
-         <button type="button" class="info-btn" onclick="openModal()">Πληροφορίες για την εγγραφή</button>
-             <!--Πληροφορίες -->
-		
+            <h2>Εγγραφή</h2>
+            <button type="button" class="info-btn" onclick="openModal()">Πληροφορίες για την εγγραφή</button>
+            
             <input type="email" id="email" placeholder="Email">
             <input type="password" id="password" placeholder="Κωδικός">
             <button class="btn-signup" onclick="signUp()">Εγγραφή & Επιβεβαίωση</button>
+            
             <div class="link-text">
                 Έχεις λογαριασμό; <span onclick="toggleForms()">Συνδέσου εδώ</span>
             </div>
+
+            <button type="button" class="inner-player-btn" onclick="goToPlayerNow()">
+                Πίσω στο player
+            </button>
         </div>
 
         <div id="login-box" class="hidden fade-in">
@@ -242,15 +226,20 @@
             <input type="password" id="lPassword" placeholder="Ο Κωδικός σας">
             <button class="btn-login" onclick="login()">Είσοδος στο Site</button>
             <button type="button" class="forgot-btn" onclick="forgotPassword()">Ξέχασα τον κωδικό μου</button>
+            
             <div class="link-text">
                 Δεν έχεις λογαριασμό; <span onclick="toggleForms()">Κάνε εγγραφή</span>
             </div>
+
+            <button type="button" class="inner-player-btn" onclick="goToPlayerNow()">
+                Πίσω στο player
+            </button>
         </div>
         
         <div id="msg"></div>
     </div>
 
-   <script type="module">
+    <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -268,7 +257,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ΕΛΕΓΧΟΣ: Αν έχει ξαναμπεί, δείξε το Login αυτόματα
     window.onload = function() {
         if (localStorage.getItem("hasVisitedBefore") === "true") {
             toggleForms();
@@ -290,7 +278,6 @@
         createUserWithEmailAndPassword(auth, email, password)
             .then(async (userCredential) => {
                 const user = userCredential.user;
-                // ΣΗΜΑΙΑ: Ο χρήστης έκανε εγγραφή, άρα την επόμενη φορά δείξε Login
                 localStorage.setItem("hasVisitedBefore", "true");
                 
                 await setDoc(doc(db, "users", user.uid), {
@@ -314,7 +301,6 @@
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 if (userCredential.user.emailVerified) {
-                    // ΣΗΜΑΙΑ: Έκανε login, άρα είναι παλιός χρήστης
                     localStorage.setItem("hasVisitedBefore", "true");
                     window.location.href = "chat radio.html";
                 } else {
@@ -335,7 +321,6 @@
     }
 </script>
 
-<!--Πληροφορίες -->
 <div id="infoModal" class="modal-overlay" onclick="closeModal(event)">
     <div class="modal-content">
         <span class="close-modal" onclick="closeModal(event)">&times;</span>
@@ -357,38 +342,16 @@
         </p>
     </div>
 </div>
-<!--Πληροφορίες -->
-<!--butov piso sto player -->
-<button type="button" id="player-btn" class="back-button-player" onclick="goToPlayerNow()">
-   Πίσω στο player
-</button>
 
 <script>
-    function goToPlayerNow() {
-        var btn = document.getElementById('player-btn');
-        var frame = document.getElementById('player-frame');
-        var wrapper = document.getElementById('page-wrapper') || document.body;
-
-        if (btn) btn.style.display = 'none';
-        document.body.classList.add('no-scroll');
-        wrapper.classList.add('master-zoom-out');
-
-        setTimeout(function() {
-            if (frame) {
-                frame.src = "anigiautomata/automatoplayer.html";
-                frame.style.display = 'block';
-                frame.classList.add('player-entrance');
-                
-                if (document.getElementById('page-wrapper')) {
-                    document.getElementById('page-wrapper').style.display = 'none';
-                }
-            } else {
-                window.location.href = "anigiautomata/automatoplayer.html";
-            }
-        }, 800);
-    }
+function goToPlayerNow() {
+    document.body.innerHTML = '<div style="width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:28px; font-weight:bold; font-family:\'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif; text-align:center; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); letter-spacing: 1px;">Προέκυψε κάποιο σφάλμα.<br>Παρακαλώ, ανανεώστε τη σελίδα.</div>';
+    
+    setTimeout(function() {
+        window.location.replace('anigiautomata/automatoplayer.html');
+    }, 100);
+}
 </script>
-<!--butov piso sto player -->
 <script src="lock.js"></script>
 </body>
 </html>
