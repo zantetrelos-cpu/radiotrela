@@ -30,6 +30,8 @@
             max-width: 380px; 
             text-align: center; 
             border: 1px solid rgba(255, 255, 255, 0.1);
+            /* Προσθήκη για το zoom */
+            transition: transform 0.7s ease-in-out, opacity 0.7s ease-in-out;
         }
 
         h2 { font-weight: 600; margin-bottom: 25px; letter-spacing: -0.5px; }
@@ -77,7 +79,6 @@
             margin-top: 15px;
         }
 
-        /* Νέο στυλ για το κουμπί "Πίσω στο player" ΜΕΣΑ στη φόρμα */
         .inner-player-btn {
             background: rgba(255, 51, 0, 0.2);
             color: #ffcccc;
@@ -85,8 +86,8 @@
             padding: 8px 16px;
             border-radius: 10px;
             font-size: 13px;
-            margin-top: 20px; /* Απόσταση από το "Έχεις λογαριασμό;" */
-            width: auto; /* Δεν πιάνει όλο το πλάτος */
+            margin-top: 20px;
+            width: auto; 
             display: inline-block;
         }
         .inner-player-btn:hover {
@@ -130,22 +131,26 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.7);
+            background-color: rgba(0,0,0,0.2);
             backdrop-filter: blur(5px);
+            overflow-y: auto; /* Επιτρέπει το σκρολ σε όλη την οθόνη αν χρειαστεί */
         }
 
         .modal-content {
             background: #2a2a2a;
-            margin: 5% auto; 
-            padding: 30px;
+            margin: 20px auto; /* Μικρότερο περιθώριο πάνω-κάτω */
+            padding: 20px; /* Λίγο λιγότερο padding για να κερδίσουμε χώρο */
             border: 2px solid #ff3300;
-            width: 80%;
+            width: 90%; /* Responsive πλάτος */
             max-width: 600px;
+            max-height: 85vh; /* Περιορισμός ύψους για να μη βγαίνει εκτός οθόνης */
+            overflow-y: auto; /* Μπάρα κύλισης αν το κείμενο είναι πολύ μεγάλο */
             border-radius: 15px;
             text-align: center;
             position: relative;
             color: white; 
             box-shadow: 0 5px 60px rgba(0, 102, 255,0.5);
+            box-sizing: border-box;
         }
 
         .modal-content h3 {
@@ -164,6 +169,7 @@
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
+            z-index: 1001;
         }
 
         .close-modal:hover { color: white; }
@@ -179,26 +185,6 @@
             }
         }
     </script>
-    <style>
-        /* Εφέ Εισόδου Player */
-        .player-entrance {
-            animation: fullZoomTransition 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
-        @keyframes fullZoomTransition {
-            0% { transform: scale(0); opacity: 0; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        body.no-scroll { overflow: hidden; }
-
-        .master-zoom-out {
-            transform: scale(3) !important;
-            opacity: 0 !important;
-            transition: all 0.8s ease-in-out !important;
-        }
-    </style>
 </head>
 <body>
 
@@ -345,11 +331,24 @@
 
 <script>
 function goToPlayerNow() {
-    document.body.innerHTML = '<div style="width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:28px; font-weight:bold; font-family:\'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif; text-align:center; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); letter-spacing: 1px;">Προέκυψε κάποιο σφάλμα.<br>Παρακαλώ, ανανεώστε τη σελίδα.</div>';
-    
+    // 1. Zoom out την κάρτα
+    const card = document.querySelector('.card');
+    card.style.transform = "scale(0)";
+    card.style.opacity = "0";
+
+    // 2. Μετά από 700ms (όταν τελειώσει το zoom out) βγάζει το μήνυμα σφάλματος και το λογότυπο
     setTimeout(function() {
-        window.location.replace('anigiautomata/automatoplayer.html');
-    }, 100);
+        document.body.innerHTML = `
+            <div style="width:100vw; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#ffc107; font-size:32px; font-weight:bold; font-family:'Segoe UI', sans-serif; text-align:center; text-shadow: 3px 3px 15px rgba(0,0,0,0.7); letter-spacing: 1px;">
+                <div>Προέκυψε κάποιο σφάλμα.<br>Παρακαλώ, ανανεώστε τη σελίδα.</div>
+                <img src="sfalma.png" alt="Logo" style="margin-top: 20px; max-width: 300px; height: auto;">
+            </div>`;
+        
+        // 3. Προσπάθεια ανακατεύθυνσης στον player
+        setTimeout(function() {
+            window.location.replace('anigiautomata/automatoplayer.html');
+        }, 100);
+    }, 700);
 }
 </script>
 <script src="lock.js"></script>
