@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <title>Web TV Τρέλα Ζακύνθου</title>
+  <link rel='stylesheet' href='https://radiofilotimo.neocities.org/arxiatv/video-js.css' />
+  <style>
+    body { margin: 0; overflow: hidden; background: #000; }
+    .video-js { width: 100%; height: 100vh; }
+    .vjs-status-label {
+      position: absolute; top: 10px; right: 10px; background: red; color: white;
+      padding: 5px 10px; font-size: 14px; font-weight: bold; border-radius: 4px;
+      z-index: 999; pointer-events: none; font-family: sans-serif;
+    }
+    .vjs-current-time, .vjs-duration, .vjs-time-divider,
+    .vjs-progress-control, .vjs-play-control, .vjs-time-control,
+    .vjs-control.vjs-current-time-display, .vjs-control.vjs-duration-display,
+    .vjs-control.vjs-time-divider, .vjs-live-control, .vjs-seek-to-live-control {
+      display: none !important;
+    }
+    /* ΑΠΟΣΤΑΣΗ ΓΙΑ ΤΟ OFFLINE ΑΠΟ ΤΟΝ ΗΧΟ */
+    .vjs-live-label { 
+      margin-left: 15px !important; 
+      margin-right: 15px !important;
+      pointer-events: none; 
+      display: flex; 
+      align-items: center; 
+    }
+    .vjs-live-label span {
+      color: white; background: red; padding: 2px 8px; border-radius: 4px;
+      font-weight: bold; font-size: 13px; letter-spacing: 1px;
+    }
+    /* ΤΟ ΜΠΟΥΤΟΝ ΑΛΛΑΓΗΣ ΣΤΗ ΔΕΞΙΑ ΓΩΝΙΑ */
+    .vjs-change-fallback-button {
+      font-size: 0.9em; padding: 0 12px; line-height: 2.2em; border-radius: 4px;
+      background-color: #007bff; color: white; text-align: center; cursor: pointer;
+      display: none; 
+      margin-left: auto !important; 
+      margin-right: 10px;
+    }
+    .vjs-change-fallback-button:hover { background-color: #0056b3; }
+  </style>
+</head>
+<body>
+
+<video id="player" class="video-js" controls playsinline></video>
+
+<script src='https://radiofilotimo.neocities.org/arxiatv/video.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-quality-levels/2.1.0/videojs-contrib-quality-levels.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@1.1.4/dist/videojs-hls-quality-selector.min.js'></script>
+<script src="https://radiofilotimo.neocities.org/arxiatv/script.js"></script>
+
+<script>
+  const liveSrc = "https://live20.bozztv.com/akamaissh101/ssh101/radiotvtrela/playlist.m3u8";
+  const secondaryLiveSrc = "https://edge1-eu-west.picarto.tv/stream/golive%2bzakynthos.mp4";
+  const fallbackSrc = "https://video.gumlet.io/676da5bee52b1079305dbcd3/69fe08b337b9faaaced8eed2/download.mp4";
+  const additionalFallbackSrc = "https://stream.gumlet.io/67a9d3a3feefe705cbda86f6/68023cd93f934d7b33b9ecc7/main.m3u8";
+
+  const player = videojs('player', { fluid: true });
+  const label = document.createElement('div');
+  label.className = 'vjs-status-label';
+  label.textContent = 'Ζωντανά τώρα';
+  player.el().appendChild(label);
+
+  let currentStream = 'live';
+  let waitingTimeout = null;
+  let freezeCheckInterval = null;
+  let lastTime = 0;
+  let freezeCount = 0;
+  let changeFallbackButton = null;
+
+  function startFreezeCheck() {
+    clearInterval(freezeCheckInterval);
+    freezeCount = 0;
+    lastTime = player.currentTime();
+    freezeCheckInterval = setInterval(() => {
+      const nowTime = player.currentTime();
+      if (nowTime === lastTime) {
+        freezeCount++;
+        if (freezeCount >= 3 && currentStream === 'secondary') {
+          playFallback(true);
+          clearInterval(freezeCheckInterval);
+        }
+      } else {
+        freezeCount = 0;
+        lastTime = nowTime;
+      }
+    }, 3000);
+  }
+
+  function stopFreezeCheck() { clearInterval(freezeCheckInterval); }
+
+  function safePlay() {
+    const promise = player.play();
+    if (promise !== undefined) {
+      promise.catch(() => {});
+    }
+  }
+
+  function playSrc(source, labelText, liveLabelHtml, streamType) {
+    let type = 'application/x-mpegURL';
+    if (streamType === 'secondary' || streamType === 'fallback') type = 'video/mp4';
+    if (streamType === 'fallback2') type = 'application/x-mpegURL';
+
+    if (player.currentSrc() !== source) {
+      player.src({ src: source, type });
+      safePlay();
+      label.textContent = labelText;
+      currentStream = streamType;
+      player.loop(false);
+      if (window.liveLabelComponent) window.liveLabelComponent.el().innerHTML = liveLabelHtml;
+      updateChangeFallbackButtonVisibility();
+    }
+  }
+
+  function playLive() { stopFreezeCheck(); playSrc(liveSrc, "Ζωντανά τώρα", '<span>LIVE</span>', 'live'); }
+  function playSecondaryLive() { stopFreezeCheck(); playSrc(secondaryLiveSrc, "Live now", '<span>LIVE</span>', 'secondary'); }
+  function playFallback(forcePrimary = false) {
+    stopFreezeCheck();
+    const src = forcePrimary || currentStream === 'fallback2' ? fallbackSrc : additionalFallbackSrc;
+    const type = forcePrimary || currentStream === 'fallback2' ? 'fallback' : 'fallback2';
+    playSrc(src, "Βίντεο clip", '<span style="background:gray;">OFFLINE</span>', type);
+  }
+
+  function updateChangeFallbackButtonVisibility() {
+    if (changeFallbackButton) {
+      changeFallbackButton.el().style.display = (currentStream === 'fallback' || currentStream === 'fallback2') ? 'block' : 'none';
+      changeFallbackButton.el().textContent = currentStream === 'fallback' ? 'Επόμενο βίντεο' : 'πίσω';
+    }
+  }
+
+  player.on('loadstart', () => { if (changeFallbackButton) changeFallbackButton.el().style.display = 'none'; });
+  player.on('playing', () => { clearTimeout(waitingTimeout); waitingTimeout = null; if (currentStream === 'secondary') startFreezeCheck(); else stopFreezeCheck(); updateChangeFallbackButtonVisibility(); });
+  player.on('error', () => {
+    player.error(null); player.removeClass('vjs-error');
+    if (currentStream === 'live') playSecondaryLive();
+    else if (currentStream === 'secondary') playFallback(true);
+    else if (currentStream === 'fallback') playSrc(additionalFallbackSrc, "Βίντεο clip", '<span style="background:gray;">OFFLINE</span>', 'fallback2');
+    else if (currentStream === 'fallback2') updateChangeFallbackButtonVisibility();
+  });
+  player.on('waiting', () => {
+    if ((currentStream === 'live' || currentStream === 'secondary') && !waitingTimeout) {
+      waitingTimeout = setTimeout(() => {
+        if (currentStream === 'live') playSecondaryLive();
+        else playFallback(true);
+        waitingTimeout = null;
+      }, 7000);
+    }
+  });
+  player.on('ended', () => { if (currentStream.startsWith('fallback')) playFallback(); });
+
+  setInterval(() => {
+    if (currentStream.startsWith('fallback')) {
+      fetch(liveSrc, { method: 'HEAD' }).then(r => { if (r.ok) playLive(); else return fetch(secondaryLiveSrc, { method: 'HEAD' }); })
+        .then(r => { if (r && r.ok && currentStream.startsWith('fallback')) playSecondaryLive(); }).catch(() => {});
+    }
+  }, 15000);
+
+  player.ready(() => {
+    const liveButton = videojs.getComponent('Button');
+    const LiveLabel = videojs.extend(liveButton, {
+      constructor: function() { liveButton.apply(this, arguments); this.addClass('vjs-live-label'); this.el().innerHTML = '<span>LIVE</span>'; },
+      handleClick: function() {}
+    });
+    videojs.registerComponent('LiveLabel', LiveLabel);
+    
+    // Προσθήκη του Live/Offline Label
+    window.liveLabelComponent = player.controlBar.addChild('LiveLabel', {});
+
+    const ChangeFallbackButton = videojs.extend(liveButton, {
+      constructor: function() { liveButton.apply(this, arguments); this.addClass('vjs-change-fallback-button'); this.el().innerHTML = 'Αλλαγή Βίντεο'; },
+      handleClick: function() { playFallback(); }
+    });
+    videojs.registerComponent('ChangeFallbackButton', ChangeFallbackButton);
+    
+    // Προσθήκη του κουμπιού αλλαγής τέρμα δεξιά
+    changeFallbackButton = player.controlBar.addChild('ChangeFallbackButton', {});
+    changeFallbackButton.el().style.display = 'none';
+  });
+
+  window.addEventListener('load', () => {
+    const isInIframe = window.self !== window.top;
+    const hasReferrer = document.referrer && !document.referrer.includes(location.hostname);
+
+    if (isInIframe || hasReferrer) {
+      const unlock = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
+      document.body.dispatchEvent(unlock);
+
+      setTimeout(() => {
+        player.muted(false);
+        player.volume(1.0);
+        safePlay();
+        playLive();
+      }, 800);
+    } else {
+      player.muted(true);
+      playLive();
+    }
+  });
+
+  document.addEventListener('contextmenu', e => e.preventDefault());
+</script>
+
+</body>
+</html>
