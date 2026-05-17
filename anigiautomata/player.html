@@ -90,13 +90,14 @@
  
   #equalizer{position:absolute;bottom:0;width:100%;height:100vh;z-index:1}
  
+  /* --- Η ΔΙΟΡΘΩΣΗ ΠΟΥ ΖΗΤΗΣΕΣ --- */
   #nowPlaying {
     position: absolute;
     top: 390px;
-    width: 90%;
+    width: 90%; /* Λίγο μεγαλύτερο για καλύτερο οπτικό πεδίο */
     height: 50px;
     z-index: 4;
-    overflow: hidden;
+    overflow: hidden; /* Κρύβει το κείμενο όταν βγαίνει από τα όρια */
     white-space: nowrap;
     font-family: 'Montserrat', sans-serif;
     font-size: 29px;
@@ -105,32 +106,34 @@
     text-shadow: 0 0 10px #ff0000;
     display: flex;
     align-items: center;
+    /* Μάσκα για ομαλό σβήσιμο στις άκρες */
     -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0) 100%);
     mask-image: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0) 100%);
   }
 
   .scroll-text {
     display: inline-block;
-    padding-left: 100%;
-    animation: marquee 15s linear infinite;
+    padding-left: 100%; /* Σπρώχνει το κείμενο να ξεκινήσει ΕΞΩ από το div, στα δεξιά */
+    animation: marquee 15s linear infinite; /* 15 δευτερόλεπτα για ομαλή ταχύτητα */
   }
 
   @keyframes marquee {
-    0% { transform: translate3d(0, 0, 0); }
-    100% { transform: translate3d(-100%, 0, 0); }
+    0% { transform: translate3d(0, 0, 0); } /* Ξεκινά από την αρχή του padding (δεξιά) */
+    100% { transform: translate3d(-100%, 0, 0); } /* Τερματίζει όταν όλο το κείμενο βγει αριστερά */
   }
 
   .static-text {
     display: inline-block;
     width: 100%;
     text-align: center;
-    animation: floatTitle 3s address-in-out infinite alternate;
+    animation: floatTitle 3s ease-in-out infinite alternate;
   }
 
   @keyframes floatTitle {
     from { transform: translateY(0px); opacity: 0.9; }
     to { transform: translateY(-5px); opacity: 1; }
   }
+  /* ---------------------- */
 
   #volumeControl {
     position: absolute;top: 330px;left: 50%;transform: translateX(-50%);
@@ -141,11 +144,11 @@
   #volumeValue {font-size: 18px;color: #00ffcc;text-shadow: 0 0 8px #00ffcc;width: 50px;text-align: left;}
 
   #effectBtn {
-    position: absolute; top: 20px; left: 20px;
-    width: 100px; height: 45px; border-radius: 8px;
-    border: 2px solid #00ffcc; background: rgba(0, 0, 0, 0.5);
-    color: #00ffcc; cursor: pointer; font-weight: bold; z-index: 100;
-    box-shadow: 0 0 15px #00ffcc; display: flex; align-items: center; justify-content: center;
+    position: absolute;top: 15px;left: 15px;width: 80px;height: 60px;
+    background: rgba(0, 255, 204, 0.3);border: 3px solid #00ffcc;border-radius: 30px;
+    display: flex;align-items: center;justify-content: center;cursor: pointer;z-index: 100;
+    font-weight: bold;font-size: 16px;color: white;text-shadow: 0 0 10px #00ffcc;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);transition: all 0.2s ease;
   }
   body::after {content: "";position: fixed;top: 0;left: 0;width: 100%;height: 100%;background-color: rgba(0, 0, 0, 0.7);z-index: -1;}
 </style>
@@ -174,7 +177,7 @@
 <script>                        
 const STREAMS = {
   live: { name: "ΚΥΡΙΟΣ ΣΕΡΒΕΡ", streamUrl: "https://freestream.hu:8340/trela233", statusUrl: "https://freestream.hu:8340/status-json.xsl?mount=/trela233" },
-  backup: { name: "BACKUP ΣΕΡΒΕΡ", streamUrl: "https://radio.nitro-server.uk/listen/radiotrela/radio.mp3", statusUrl: "https://radio.nitro-server.uk/api/nowplaying/radiotrela" }
+  backup: { name: "BACKUP ΣΕΡΒΕΡ", streamUrl: "https://stream.zeno.fm/x8gduy6xd48uv", zenoStationId: "x8gduy6xd48uv", zenoMetaUrl: (id) => `https://api.zeno.fm/mounts/metadata/subscribe/${id}` }
 };
 
 const INTRO_URL = "https://zantetrelos-cpu.github.io/radiotrela/%CE%A1%CE%AC%CE%B4%CE%B9%CE%BF%20%CE%A3%CF%8D%CE%BD%CE%BD%CE%B5%CF%86%CE%B1.mp3";
@@ -197,6 +200,9 @@ const volumeValue = document.getElementById('volumeValue');
 const effectBtn = document.getElementById('effectBtn');
 const loadingModal = document.getElementById('loadingModal');
 const modalText = document.getElementById('modalText');
+
+let zenoEventSource = null;
+let zenoPollInterval = null;
 
 function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 window.addEventListener('resize', resizeCanvas);
@@ -369,9 +375,11 @@ function decodeGreek(str){
   } catch(e){ return str; }
 }
 
+// ΚΑΘΑΡΗ ΕΜΦΑΝΙΣΗ ΧΩΡΙΣ ΔΙΠΛΟΤΥΠΑ
 function updateUIWithTitle(titleText) {
   let finalTitle = titleText || originalRadioName;
   if (finalTitle.length > 20) {
+    // Μόνο μια φορά το κείμενο, το CSS αναλαμβάνει την κίνηση από δεξιά
     nowPlayingEl.innerHTML = `<span class="scroll-text">${finalTitle}</span>`;
   } else {
     nowPlayingEl.innerHTML = `<span class="static-text">${finalTitle}</span>`;
@@ -395,15 +403,43 @@ async function fetchTitle() {
       updateUIWithTitle(title);
     } catch(e) { updateUIWithTitle(originalRadioName); }
   } else {
-    // NITRO BACKUP TITLE FETCH
-    try {
-      const r = await fetch(STREAMS.backup.statusUrl + "?t=" + Date.now());
-      const data = await r.json();
-      if(data && data.now_playing && data.now_playing.song) {
-         updateUIWithTitle(data.now_playing.song.text);
-      }
-    } catch(e) { updateUIWithTitle(originalRadioName); }
+    if (!zenoEventSource && !zenoPollInterval) startZenoSSE();
   }
+}
+
+function startZenoSSE(){
+  stopZeno();
+  const url = STREAMS.backup.zenoMetaUrl(STREAMS.backup.zenoStationId);
+  try {
+    zenoEventSource = new EventSource(url);
+    zenoEventSource.onmessage = (ev) => {
+      try {
+        const d = JSON.parse(ev.data);
+        const title = (d && d.streamTitle) ? String(d.streamTitle).trim() : "";
+        updateUIWithTitle(title);
+      } catch(e){}
+    };
+    zenoEventSource.onerror = () => { stopZeno(); startZenoPolling(); };
+  } catch(e){ startZenoPolling(); }
+}
+
+function startZenoPolling(){
+  stopZeno();
+  const fetchOnce = async () => {
+    try{
+      const r = await fetch(STREAMS.backup.zenoMetaUrl(STREAMS.backup.zenoStationId) + "?t=" + Date.now());
+      const data = await r.json();
+      const title = data && data.streamTitle ? String(data.streamTitle).trim() : "";
+      updateUIWithTitle(title);
+    } catch(e){ updateUIWithTitle(originalRadioName); }
+  };
+  fetchOnce();
+  zenoPollInterval = setInterval(fetchOnce, 10000);
+}
+
+function stopZeno(){
+  if(zenoEventSource){ try{ zenoEventSource.close(); }catch(e){} zenoEventSource = null; }
+  if(zenoPollInterval){ clearInterval(zenoPollInterval); zenoPollInterval = null; }
 }
 
 function startAutoRetry(){
@@ -425,31 +461,28 @@ async function playStream(url, live=true){
   skipBtn.style.display = "none";
   audio.pause(); audio.src = ""; isLive = live;
   
-  modalText.textContent = live ? "Φόρτωση live streaming" : "Σύνδεση με Backup Server...";
+  if (!live) {
+      stopZeno();
+      startZenoSSE();
+  } else {
+      stopZeno();
+  }
+
+  modalText.textContent = live ? "Φόρτωση live streaming" : "παρακαλώ περιμένετε φόρτωση servers";
   loadingModal.style.display = "flex";
-  statusEl.textContent = live ? "Φόρτωση Live Streaming" : "Φόρτωση Backup...";
-  statusEl.className = "loading"; 
-  
-  audio.src = url;
+  statusEl.textContent = live ? "Φόρτωση Live Streaming" : "Φόρτωση, παρακαλώ περιμένετε";
+  statusEl.className = "loading"; audio.src = url;
   try {
     await audio.play();
     loadingModal.style.display = "none";
-    statusEl.textContent = live ? "ON AIR Radio Synnefa" : " ON AIR (Backup)";
+    statusEl.textContent = live ? "ON AIR Radio Synnefa" : " ON AIR (Fallback)";
     statusEl.className = live ? "onair" : "offair";
-    
-    // Προσθήκη καθυστέρησης 2 δευτερολέπτων πριν ζητήσει τίτλο
-    // για να προλάβει να σταθεροποιηθεί η σύνδεση
-    setTimeout(() => {
-        fetchTitle();
-    }, 2000);
-
+    fetchTitle();
   } catch(e){
-    if(live) {
-        console.log("Live stream failed, trying backup...");
-        playStream(STREAMS.backup.streamUrl, false);
-    } else { 
-        loadingModal.style.display = "none";
-        statusEl.textContent = "Offline"; 
+    if(live) playStream(STREAMS.backup.streamUrl, false);
+    else { 
+        modalText.textContent = "παρακαλώ περιμένετε φόρτωση servers";
+        statusEl.textContent = "παρακαλώ περιμένετε φόρτωση server"; 
         statusEl.className = "offair"; 
     }
   }
@@ -489,6 +522,7 @@ btn.addEventListener('click', () => {
     isPlaying = false;
     skipBtn.style.display = "none";
     loadingModal.style.display = "none";
+    stopZeno();
   } else {
     if(!hasIntroPlayed) {
         startIntro();
@@ -513,7 +547,7 @@ audio.addEventListener('ended', () => {
     else if(isLive) playStream(STREAMS.backup.streamUrl, false); 
 });
 
-setInterval(() => { if(isPlaying && !isIntroActive) fetchTitle(); }, 15000);
+setInterval(() => { if(isPlaying && !isIntroActive && isLive) fetchTitle(); }, 15000);
 
 let _breathRunning = false;
 let lastLevel = 0;
