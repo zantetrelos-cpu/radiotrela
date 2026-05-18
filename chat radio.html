@@ -104,9 +104,6 @@
         }
         /* ΠΡΩΤΟ ΚΟΥΜΠΙ (Streaming) */
         #openBtn1 { left: 10px; background-color: #cc3399; }
-        
-        /* ΔΕΥΤΕΡΟ ΚΟΥΜΠΙ (TV LIVE) - Τοποθετημένο δίπλα */
-        #openBtn2 { left: 150px; background-color: #cc33ff; }
 
         /* ΣΤΥΛ ΠΑΡΑΘΥΡΩΝ */
         .video-container {
@@ -124,9 +121,7 @@
             user-select: none;
         }
         
-        /* Διαφορετικά χρώματα για να ξεχωρίζουν */
         #videoContainer1 { left: 80px; border: 2px solid #cc3399; }
-        #videoContainer2 { left: 50px; border: 2px solid #cc33ff; }
 
         .drag-handle {
             position: absolute;
@@ -141,7 +136,6 @@
             font-weight: bold;
         }
         #dragHandle1 { background: #cc3399; }
-        #dragHandle2 { background: #cc33ff; }
 
         .close-btn {
             position: absolute;
@@ -187,7 +181,6 @@
             clip-path: polygon(100% 0, 100% 100%, 0 100%);
         }
         #resizeHandle1 { background: #cc3399; }
-        #resizeHandle2 { background: #cc33ff; }
     </style>
 <!-- mono live tv  -->
 
@@ -293,7 +286,6 @@
  <!-- mono live tv  -->
 
 <button id="openBtn1" class="open-btn">Streaming </button>
-<button id="openBtn2" class="open-btn">tv live</button>
 
 <div id="videoContainer1" class="video-container">
     <div id="dragHandle1" class="drag-handle">Streaming Radio Synnefa</div>
@@ -305,24 +297,10 @@
     <p style="font-size: 0.9em; color: #ffff00;">
       Σύρετε για μετακίνηση & μεγαλώστε<br> το παράθυρο από την κάτω δεξιά γωνία.
     </p>
-	<h3>μετακινήσετε το παράθυρο tv όπου σας βολεύει</h3>
+    <h3>μετακινήσετε το παράθυρο tv όπου σας βολεύει</h3>
     </div>
     <iframe id="liveFrame1" allow="autoplay; fullscreen" allowfullscreen></iframe>
     <div id="resizeHandle1" class="resize-handle"></div>
-</div>
-
-<div id="videoContainer2" class="video-container">
-    <div id="dragHandle2" class="drag-handle">TV LIVE </div>
-    <div id="closeBtn2" class="close-btn">&times;</div>
-    <div id="welcomeMsg2" class="welcome-msg">
-        <h2>Καλώς ήρθατε στην TV LIVE !</h2>
-    <p style="font-size: 0.9em; color: #ffff00;">
-      Σύρετε για μετακίνηση & μεγαλώστε<br> το παράθυρο από την κάτω δεξιά γωνία.
-    </p>
-	<h3>μετακινήσετε το παράθυρο tv όπου σας βολεύει</h3>
-    </div>
-    <iframe id="liveFrame2" allow="autoplay; fullscreen" allowfullscreen></iframe>
-    <div id="resizeHandle2" class="resize-handle"></div>
 </div>
 
 <script>
@@ -403,22 +381,11 @@ setupWindow({
     openBtnId: 'openBtn1',
     closeBtnId: 'closeBtn1',
     welcomeMsgId: 'welcomeMsg1',
-    url: "https://vdo.ninja/?view=SiDsgNa&cleanoutput&transparent&autoplay=1"
-});
-
-// ΡΥΘΜΙΣΗ ΠΑΡΑΘΥΡΟΥ 2
-setupWindow({
-    containerId: 'videoContainer2',
-    dragHandleId: 'dragHandle2',
-    resizeHandleId: 'resizeHandle2',
-    iframeId: 'liveFrame2',
-    openBtnId: 'openBtn2',
-    closeBtnId: 'closeBtn2',
-    welcomeMsgId: 'welcomeMsg2',
-    url: "tvsakis.html" // Βάλε εδώ το URL για την TV
+    url: "tv-radio sinefa.html"
 });
 </script>
 <!-- mono live tv  -->
+
 
 <!--   klidoma apo forma  -->
 <script type="module">
