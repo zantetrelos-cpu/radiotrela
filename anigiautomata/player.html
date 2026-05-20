@@ -41,12 +41,31 @@
     font-weight: bold;
     box-shadow: 0 0 30px #00ffcc;
     animation: pulse 1.5s infinite;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
   }
  
   @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
+  }
+
+  /* Ο ΚΥΚΛΟΣ ΠΟΥ ΓΥΡΙΖΕΙ (SPINNER) */
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 255, 204, 0.1);
+    border-top: 4px solid #00ffcc;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
   .player-btn {
@@ -156,7 +175,10 @@
 <body>
 
 <div id="loadingModal">
-  <div class="modal-content" id="modalText">Φόρτωση...</div>
+  <div class="modal-content">
+    <div id="modalText">Φόρτωση...</div>
+    <div class="spinner"></div>
+  </div>
 </div>
 
 <canvas id="equalizer"></canvas>
