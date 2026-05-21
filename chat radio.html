@@ -88,101 +88,7 @@
   .time { font-size: 24px; font-weight: 700; text-shadow: 0 0 8px rgba(255,255,255,0.8); }
   .date { font-size: 13px; opacity: 0.95; margin-top: 4px; }
 </style>
-<!-- mono live tv  -->
- <style>
-        /* ΚΟΙΝΑ ΣΤΥΛ ΓΙΑ ΤΑ ΚΟΥΜΠΙΑ */
-        .open-btn {
-            position: fixed;
-            bottom: 10px;
-            padding: 10px 20px;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            z-index: 1001;
-            font-size: 20px;
-        }
-        /* ΠΡΩΤΟ ΚΟΥΜΠΙ (Streaming) */
-        #openBtn1 { left: 10px; background-color: #cc3399; }
 
-        /* ΣΤΥΛ ΠΑΡΑΘΥΡΩΝ */
-        .video-container {
-            display: none;
-            position: fixed;
-            top: 80px;
-            width: 900px;
-            height: 540px;
-            background: #000;
-            border-radius: 8px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-            z-index: 1000;
-            overflow: hidden;
-            padding-top: 30px;
-            user-select: none;
-        }
-        
-        #videoContainer1 { left: 80px; border: 2px solid #cc3399; }
-
-        .drag-handle {
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 30px;
-            cursor: move;
-            z-index: 11;
-            display: flex;
-            align-items: center;
-            padding-left: 10px;
-            color: white;
-            font-weight: bold;
-        }
-        #dragHandle1 { background: #cc3399; }
-
-        .close-btn {
-            position: absolute;
-            top: 2px;
-            right: 5px;
-            width: 25px;
-            height: 25px;
-            background: #ff4d4d;
-            color: white;
-            font-weight: bold;
-            text-align: center;
-            line-height: 25px;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 13;
-        }
-
-        .welcome-msg {
-            position: absolute;
-            top: 30px;
-            left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            color: white;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-            z-index: 15;
-            pointer-events: none;
-            transition: opacity 0.8s ease;
-        }
-
-        iframe { width: 100%; height: 100%; border: none;  }
-
-        .resize-handle {
-            position: absolute;
-            width: 25px; height: 25px;
-            right: 0; bottom: 0;
-            cursor: se-resize;
-            z-index: 12;
-            clip-path: polygon(100% 0, 100% 100%, 0 100%);
-        }
-        #resizeHandle1 { background: #cc3399; }
-    </style>
-<!-- mono live tv  -->
 
 
 	<!--   mpara mr xroma  -->
@@ -216,7 +122,7 @@
             flex: 1;
             min-width: 320px; 
             max-width: 1000px;
-            height: 540px; /* Ύψος για το Chat */
+            height: 507px; /* Ύψος για το Chat */
             border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 20px;
             overflow: hidden;
@@ -229,12 +135,12 @@
             flex: 1;
             min-width: 320px; 
             max-width: 900px;
-            height: 540px; /* Ύψος για τον Player ώστε να μη φαίνεται κομμένος */
+            height: 507px; /* Ύψος για τον Player ώστε να μη φαίνεται κομμένος */
             border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 20px;
             overflow: hidden;
         ">
-            <iframe id="main-player" src="anigiautomata/player.html" title="Player" 
+            <iframe id="main-player" src="player-tv/player.html" title="Player" 
                 style="width:100%; height:100%; border:none; display:block;"></iframe>
         </div>
     </div>
@@ -283,108 +189,6 @@
         });
     }
 </script>
- <!-- mono live tv  -->
-
-<button id="openBtn1" class="open-btn">Streaming </button>
-
-<div id="videoContainer1" class="video-container">
-    <div id="dragHandle1" class="drag-handle">Streaming Radio Synnefa</div>
-    <div id="closeBtn1" class="close-btn">&times;</div>
-    <div id="welcomeMsg1" class="welcome-msg">
-        
-         <h2>Καλώς ήρθατε στο Live Streaming !</h2>
-    <p>🔴 LIVE STREAMING • MUSIC VIDEOS • TV LIVE<br> Ζωντανές μεταδόσεις και εκπομπές σε πραγματικό χρόνο.</p>
-    <p style="font-size: 0.9em; color: #ffff00;">
-      Σύρετε για μετακίνηση & μεγαλώστε<br> το παράθυρο από την κάτω δεξιά γωνία.
-    </p>
-    <h3>μετακινήσετε το παράθυρο tv όπου σας βολεύει</h3>
-    </div>
-    <iframe id="liveFrame1" allow="autoplay; fullscreen" allowfullscreen></iframe>
-    <div id="resizeHandle1" class="resize-handle"></div>
-</div>
-
-<script>
-function setupWindow(config) {
-    const container = document.getElementById(config.containerId);
-    const dragHandle = document.getElementById(config.dragHandleId);
-    const resizeHandle = document.getElementById(config.resizeHandleId);
-    const iframe = document.getElementById(config.iframeId);
-    const openBtn = document.getElementById(config.openBtnId);
-    const closeBtn = document.getElementById(config.closeBtnId);
-    const welcomeMsg = document.getElementById(config.welcomeMsgId);
-
-    const wall = document.createElement('div');
-    wall.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;display:none;";
-    document.body.appendChild(wall);
-
-    openBtn.onclick = () => {
-        iframe.src = config.url;
-        container.style.display = 'block';
-        welcomeMsg.style.display = 'flex';
-        welcomeMsg.style.opacity = '1';
-        setTimeout(() => {
-            welcomeMsg.style.opacity = '0';
-            setTimeout(() => { welcomeMsg.style.display = 'none'; }, 800);
-        }, 5000);
-    };
-
-    closeBtn.onclick = () => {
-        iframe.src = "";
-        container.style.display = 'none';
-    };
-
-    let isDragging = false, isResizing = false;
-    let sX, sY, sW, sH;
-
-    dragHandle.onmousedown = (e) => {
-        isDragging = true;
-        sX = e.clientX - container.offsetLeft;
-        sY = e.clientY - container.offsetTop;
-        wall.style.display = 'block';
-        wall.style.cursor = 'move';
-    };
-
-    resizeHandle.onmousedown = (e) => {
-        isResizing = true;
-        sX = e.clientX; sY = e.clientY;
-        sW = container.offsetWidth; sH = container.offsetHeight;
-        wall.style.display = 'block';
-        wall.style.cursor = 'se-resize';
-    };
-
-    window.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            container.style.left = (e.clientX - sX) + 'px';
-            container.style.top = (e.clientY - sY) + 'px';
-        }
-        if (isResizing) {
-            const newW = sW + (e.clientX - sX);
-            const newH = sH + (e.clientY - sY);
-            if (newW > 200) container.style.width = newW + 'px';
-            if (newH > 150) container.style.height = newH + 'px';
-        }
-    });
-
-    window.addEventListener('mouseup', () => {
-        isDragging = false;
-        isResizing = false;
-        wall.style.display = 'none';
-    });
-}
-
-// ΡΥΘΜΙΣΗ ΠΑΡΑΘΥΡΟΥ 1
-setupWindow({
-    containerId: 'videoContainer1',
-    dragHandleId: 'dragHandle1',
-    resizeHandleId: 'resizeHandle1',
-    iframeId: 'liveFrame1',
-    openBtnId: 'openBtn1',
-    closeBtnId: 'closeBtn1',
-    welcomeMsgId: 'welcomeMsg1',
-    url: "sakis tv/index.html"
-});
-</script>
-<!-- mono live tv  -->
 
 <!--   klidoma apo forma  -->
 <script type="module">
