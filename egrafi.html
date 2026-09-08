@@ -288,7 +288,7 @@
             .then((userCredential) => {
                 if (userCredential.user.emailVerified) {
                     localStorage.setItem("hasVisitedBefore", "true");
-                    window.location.href = "chat radio.html";
+                    window.location.href = "chatradio/chat.html";
                 } else {
                     msg.innerText = "⚠️ Επιβεβαιώστε το email σας!";
                 }
