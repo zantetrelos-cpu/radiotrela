@@ -291,7 +291,12 @@ function addMessageToUI(msg, isPrivate) {
   }
   div.innerHTML = `${avatarHtml}<div class="msg-content"><div class="user">${escapeHtml(senderName)}</div>${contentHtml}<div class="time">${time}</div></div>`;
   container.appendChild(div);
-  requestAnimationFrame(() => { container.scrollTop = container.scrollHeight; });
+  
+  // ΔΙΟΡΘΩΣΗ: Κάνε scroll κάτω ΜΟΝΟ αν ο χρήστης είναι ήδη κοντά στο τέλος (ανοχή 150px)
+  var isNearBottom = (container.scrollHeight - container.scrollTop - container.clientHeight) < 150;
+  if (isNearBottom) {
+      requestAnimationFrame(() => { container.scrollTop = container.scrollHeight; });
+  }
 }
 
 async function deleteImage(firebasePath, deletehash, buttonElement) {
@@ -592,7 +597,6 @@ async function logoutChat() {
   document.getElementById('playerPanel').classList.remove('show'); 
   isPlayerOpen = false;
   
-  // Κλείσιμο τηλεόρασης αν υπάρχει και είναι ανοιχτή
   try {
     var tvPopup = document.getElementById('tvPopup');
     var tvIframe = document.getElementById('tvIframe');
@@ -600,9 +604,7 @@ async function logoutChat() {
       tvPopup.classList.remove('show');
       if (tvIframe) tvIframe.src = '';
     }
-  } catch(e) {
-    // Ignore errors
-  }
+  } catch(e) {}
   
   try { 
     await db.ref('active_sessions/' + currentUid).remove(); 
@@ -849,7 +851,6 @@ resizeHandle.addEventListener('mousedown', (e) => {
   startMouseX = e.clientX;
   startMouseY = e.clientY;
   
-  // Προσθήκη overlay για να μην χάνονται τα mouse events
   tvPopup.style.pointerEvents = 'none';
   resizeHandle.style.pointerEvents = 'auto';
   
@@ -894,12 +895,12 @@ document.addEventListener('touchmove', (e) => {
 document.addEventListener('touchend', () => {
   isResizing = false;
 });
+
 // Εμφάνιση popup ΜΟΝΟ αν ο χρήστης δεν είναι συνδεδεμένος
 window.addEventListener('load', function() {
     var savedUser = localStorage.getItem('chat_username');
     var savedPass = localStorage.getItem('chat_password');
     
-    // Αν ΔΕΝ υπάρχουν αποθηκευμένα στοιχεία, εμφάνισε το popup
     if (!savedUser || !savedPass) {
         setTimeout(() => {
             document.getElementById('welcomeOverlay').classList.add('show');
@@ -909,4 +910,17 @@ window.addEventListener('load', function() {
 
 function closeWelcomePopup() {
     document.getElementById('welcomeOverlay').classList.remove('show');
+}
+
+// ==========================================
+// ΔΙΟΡΘΩΣΗ: Μεταβίβαση scroll από το iframe στο chat
+// ==========================================
+const playerIframe = document.getElementById('playerIframe');
+if (playerIframe) {
+  playerIframe.addEventListener('wheel', function(e) {
+    const msgContainer = document.getElementById('msgContainer');
+    if (msgContainer) {
+      msgContainer.scrollTop += e.deltaY;
+    }
+  }, { passive: true });
 }
