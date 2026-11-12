@@ -53,7 +53,6 @@
     100% { transform: scale(1); }
   }
 
-  /* Ο ΚΥΚΛΟΣ ΠΟΥ ΓΥΡΙΖΕΙ (SPINNER) ΑΠΟ ΤΟΝ ΔΕΥΤΕΡΟ ΚΩΔΙΚΑ */
   .spinner {
     width: 40px;
     height: 40px;
@@ -143,7 +142,6 @@
     display: inline-block;
     width: 100%;
     text-align: center;
-    /* ΑΛΛΑΓΗ ΣΕ ease-in-out ΑΠΟ ΤΟΝ ΔΕΥΤΕΡΟ ΚΩΔΙΚΑ */
     animation: floatTitle 3s ease-in-out infinite alternate;
   }
 
@@ -175,7 +173,6 @@
 <div id="loadingModal">
   <div class="modal-content">
     <div id="modalText">Φόρτωση...</div>
-    <!-- ΠΡΟΣΘΗΚΗ ΤΟΥ SPINNER HTML ΑΠΟ ΤΟΝ ΔΕΥΤΕΡΟ ΚΩΔΙΚΑ -->
     <div class="spinner"></div>
   </div>
 </div>
@@ -198,7 +195,12 @@
 <script>                        
 const STREAMS = {
   live: { name: "ΚΥΡΙΟΣ ΣΕΡΒΕΡ", streamUrl: "https://freestream.hu:8340/trela233", statusUrl: "https://freestream.hu:8340/status-json.xsl?mount=/trela233" },
-  backup: { name: "BACKUP ΣΕΡΒΕΡ", streamUrl: "https://radio.nitro-server.uk/listen/radiotrela/radio.mp3", statusUrl: "https://radio.nitro-server.uk/api/nowplaying/radiotrela" }
+  backup: { 
+    name: "BACKUP ΣΕΡΒΕΡ", 
+    streamUrl: "https://stream.zeno.fm/x8gduy6xd48uv", 
+    zenoStationId: "x8gduy6xd48uv",
+    zenoMetaUrl: (id) => `https://api.zeno.fm/mounts/metadata/subscribe/${id}`
+  }
 };
 
 const INTRO_URL = "https://zantetrelos-cpu.github.io/radiotrela/%CE%A1%CE%AC%CE%B4%CE%B9%CE%BF%20%CE%A3%CF%8D%CE%BD%CE%BD%CE%B5%CF%86%CE%B1.mp3";
@@ -208,6 +210,7 @@ let audio = new Audio(); audio.crossOrigin = "anonymous";
 let audioCtx, analyser, dataArray, bufferLength, sourceNode;
 let isPlaying = false, isLive = true, retryIntervalMs = 60000;
 let isIntroActive = false, hasIntroPlayed = false;
+let zenoEventSource = null;
 
 const btn = document.getElementById('playBtn');
 const skipBtn = document.getElementById('skipIntroBtn');
@@ -402,10 +405,37 @@ function updateUIWithTitle(titleText) {
   }
 }
 
+function startZenoMetadata() {
+  stopZenoMetadata();
+  const url = STREAMS.backup.zenoMetaUrl(STREAMS.backup.zenoStationId);
+  try {
+    zenoEventSource = new EventSource(url);
+    zenoEventSource.addEventListener('message', function(event) {
+      try {
+        const data = JSON.parse(event.data);
+        if (data && data.streamTitle) {
+          updateUIWithTitle(data.streamTitle);
+        }
+      } catch (err) {}
+    });
+    zenoEventSource.onerror = function() {};
+  } catch (e) {
+    updateUIWithTitle(originalRadioName);
+  }
+}
+
+function stopZenoMetadata() {
+  if (zenoEventSource) {
+    zenoEventSource.close();
+    zenoEventSource = null;
+  }
+}
+
 async function fetchTitle() {
   if(isIntroActive) return; 
   
   if (isLive) {
+    stopZenoMetadata();
     const url = STREAMS.live.statusUrl;
     try {
       const r = await fetch(url + (url.includes('?') ? '&' : '?') + "t=" + Date.now());
@@ -419,14 +449,9 @@ async function fetchTitle() {
       updateUIWithTitle(title);
     } catch(e) { updateUIWithTitle(originalRadioName); }
   } else {
-    // NITRO BACKUP TITLE FETCH (Διατηρήθηκε η παλιά δομή)
-    try {
-      const r = await fetch(STREAMS.backup.statusUrl + "?t=" + Date.now());
-      const data = await r.json();
-      if(data && data.now_playing && data.now_playing.song) {
-         updateUIWithTitle(data.now_playing.song.text);
-      }
-    } catch(e) { updateUIWithTitle(originalRadioName); }
+    if (!zenoEventSource) {
+      startZenoMetadata();
+    }
   }
 }
 
@@ -449,7 +474,12 @@ async function playStream(url, live=true){
   skipBtn.style.display = "none";
   audio.pause(); audio.src = ""; isLive = live;
   
-  // Διατηρήθηκαν τα αρχικά κείμενα δομής
+  if (live) {
+    stopZenoMetadata();
+  } else {
+    startZenoMetadata();
+  }
+  
   modalText.textContent = live ? "Φόρτωση live streaming" : "Σύνδεση με Backup Server...";
   loadingModal.style.display = "flex";
   statusEl.textContent = live ? "Φόρτωση Live Streaming" : "Φόρτωση Backup...";
@@ -474,6 +504,7 @@ async function playStream(url, live=true){
         loadingModal.style.display = "none";
         statusEl.textContent = "Offline"; 
         statusEl.className = "offair"; 
+        stopZenoMetadata();
     }
   }
 }
@@ -512,6 +543,7 @@ btn.addEventListener('click', () => {
     isPlaying = false;
     skipBtn.style.display = "none";
     loadingModal.style.display = "none";
+    stopZenoMetadata();
   } else {
     if(!hasIntroPlayed) {
         startIntro();
