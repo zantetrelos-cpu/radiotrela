@@ -107,7 +107,6 @@ function initHlsPlayer() {
         hlsInstance.attachMedia(hlsPlayer);
         
         hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-            // Απενεργοποίηση υπότιτλων για το κύριο HLS
             for (let i = 0; i < hlsPlayer.textTracks.length; i++) {
                 hlsPlayer.textTracks[i].mode = 'disabled';
             }
@@ -132,9 +131,20 @@ iframe.addEventListener('load', () => {
     picartoPlayer.play().catch(() => {});
 });
 
+// ==========================================
+// ΔΙΟΡΘΩΣΗ: Έλεγχος έντασης από το κύριο παράθυρο (Video Call / TV toggle)
+// ==========================================
 window.addEventListener('message', (e) => {
     if (!e.data) return;
     lastMessageTime = Date.now();
+
+    // Αν λάβουμε εντολή αλλαγής έντασης από το κύριο chat
+    if (e.data.type === 'SET_TV_VOLUME') {
+        const targetVolume = Math.round(e.data.volume * 100); // Μετατροπή 0.0/1.0 σε 0/100
+        volumeSlider.value = targetVolume;
+        updateAllVolumes(targetVolume);
+        return; // Σταματάμε εδώ για αυτή την ενέργεια
+    }
 
     if (e.data.action === 'video-loaded' || e.data.event === 'wfs-video-loaded' || e.data.streamID) {
         isVdoActive = true;
@@ -217,7 +227,6 @@ function evaluateStreamPriority() {
     }
 }
 
-// Αναπαραγωγή M3U8 στο backupVideo (Με απενεργοποίηση υποτίτλων)
 function playBackupStream(url) {
     if (Hls.isSupported()) {
         if (backupHlsInstance) { backupHlsInstance.destroy(); }
@@ -264,7 +273,6 @@ function stopBackupStream() {
     }
 }
 
-// Έξυπνη εναλλαγή σε Backup (1ο βίντεο στην αρχή, τυχαία μετά το live)
 function switchToBackup() {
     currentMode = "backup";
     document.body.className = "show-backup";
@@ -272,10 +280,10 @@ function switchToBackup() {
     picartoPlayer.pause();
 
     if (isFirstLoad) {
-        currentVideoIndex = 0; // Ξεκινάει αναγκαστικά από το 1ο βίντεο της λίστας
+        currentVideoIndex = 0;
         isFirstLoad = false; 
     } else {
-        currentVideoIndex = Math.floor(Math.random() * playlist.length); // Τυχαίο βίντεο αν έπεσε το live
+        currentVideoIndex = Math.floor(Math.random() * playlist.length);
     }
 
     playBackupStream(playlist[currentVideoIndex]);
@@ -342,7 +350,6 @@ function updateAllVolumes(volumeValue) {
             warning.innerHTML = '<i class="fas fa-volume-mute" style="margin-right: 12px;"></i> Ο ήχος είναι απενεργοποιημένος. Κάντε κλικ εδώ ή δυναμώστε την ένταση.';
             warning.style = 'position: absolute; top: 125px; left: 50%; transform: translateX(-50%); background: rgba(239, 68, 68, 0.95); color: white; padding: 14px 28px; border-radius: 12px; font-weight: 700; z-index: 9999; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-size: 15px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease; display: flex; align-items: center; cursor: pointer;';
             
-            // Event listener: Με κλικ πάνω στο warning, ο ήχος πάει στο 50%
             warning.addEventListener('click', () => {
                 volumeSlider.value = 50;
                 updateAllVolumes(50);

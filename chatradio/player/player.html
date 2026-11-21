@@ -592,6 +592,10 @@ let isPlaying = false, isLive = true, retryIntervalMs = 60000;
 let isIntroActive = false, hasIntroPlayed = false;
 let zenoEventSource = null;
 
+// ΝΕΟ: Flags για ορατότητα
+let playerIsVisible = true;
+let equalizerRunning = true;
+
 const btn = document.getElementById('playBtn');
 const visualizerCircle = document.getElementById('visualizerCircle');
 const statusEl = document.getElementById('status');
@@ -726,13 +730,16 @@ const effects = [
 ];
 let currentEffect = 3;
 const effectNames = ["Bars", "★ Stars", "Circles", "Wave", "Particles", "OFF"];
+
 function drawEqualizer(){
+  if (!equalizerRunning || !playerIsVisible) return;
   requestAnimationFrame(drawEqualizer);
   if(!analyser) return;
   analyser.getByteFrequencyData(dataArray);
   ctx.clearRect(0,0,canvas.width,canvas.height);
   effects[currentEffect](ctx, dataArray, canvas.width, canvas.height);
 }
+
 effectBtn.addEventListener('click', () => {
   currentEffect = (currentEffect + 1) % effects.length;
   effectBtn.textContent = effectNames[currentEffect];
@@ -990,7 +997,7 @@ document.addEventListener("DOMContentLoaded", function () {
 /* ========== ΥΠΟΛΟΙΠΟ PLAYER ========== */
 let rotation = 0;
 function rotateButton(){
-  if(isPlaying){
+  if(isPlaying && playerIsVisible){
     rotation += 0.2;
     visualizerCircle.style.transform = `scale(1.0) rotate(${rotation}deg)`;
   }
@@ -1031,6 +1038,10 @@ function startButtonBreath(){
   if(_breathRunning) return;
   _breathRunning = true;
   function step(){
+    if (!playerIsVisible) {
+      _breathRunning = false;
+      return;
+    }
     let boost = 0;
     let targetGlow = 0;
     let musicHue = 174;
@@ -1059,6 +1070,39 @@ function startButtonBreath(){
   }
   requestAnimationFrame(step);
 }
+
+// ==========================================
+// Μηνύματα από το κυρίως παράθυρο
+// ==========================================
+window.addEventListener('message', function(event) {
+  if (event.data && event.data.type === 'PLAYER_VISIBLE') {
+    playerIsVisible = event.data.visible;
+
+    if (playerIsVisible) {
+      if (!equalizerRunning) {
+        equalizerRunning = true;
+        drawEqualizer();
+      }
+      if (!_breathRunning) {
+        startButtonBreath();
+      }
+    } else {
+      equalizerRunning = false;
+      _breathRunning = false;
+    }
+  }
+
+  if (event.data && event.data.type === 'SET_RADIO_VOLUME') {
+    var vol = event.data.volume;
+    if (typeof audio !== 'undefined' && audio) {
+      audio.volume = vol;
+    }
+    var introAudio = document.getElementById('introAudio');
+    if (introAudio) {
+      introAudio.volume = vol;
+    }
+  }
+});
 </script>
 </body>
 </html>
